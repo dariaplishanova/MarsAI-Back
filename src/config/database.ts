@@ -15,10 +15,10 @@ const connection = mysql.createConnection({
 // Typage de l'argument 'error'
 connection.connect((error: QueryError | null) => {
   if (error) {
-    console.error("❌ Erreur de connexion à MySQL:", error.message);
+    console.error('❌ Erreur de connexion à MySQL:', error.message);
     return;
   }
-  console.log("✅ Connecté à la base de données MySQL");
+  console.log('✅ Connecté à la base de données MySQL');
 });
 
 export default connection;
