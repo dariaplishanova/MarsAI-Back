@@ -1,10 +1,10 @@
-import mysql from 'mysql2'; // Import du type d'erreur
+import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 import type { QueryError } from 'mysql2';
 
 dotenv.config();
 
-const connection = mysql.createConnection({
+const connection = await mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -13,12 +13,6 @@ const connection = mysql.createConnection({
 });
 
 // Typage de l'argument 'error'
-connection.connect((error: QueryError | null) => {
-  if (error) {
-    console.error("❌ Erreur de connexion à MySQL:", error.message);
-    return;
-  }
-  console.log("✅ Connecté à la base de données MySQL");
-});
+console.log('Connexion à la base de donnée réussi ✅'); 
 
 export default connection;
