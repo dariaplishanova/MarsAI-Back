@@ -1,5 +1,5 @@
-import db from '../config/database';
-import { ResultSetHeader } from 'mysql2';
+import db from '../config/database.js';
+
 
 
 // Requete SQL pour faire une recherche de tout les festivals

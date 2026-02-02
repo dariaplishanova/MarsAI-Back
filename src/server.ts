@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
-import userRoutes from "./routes/user.routes";
+import userRoutes from "./routes/user.routes.js";
 import dotenv from 'dotenv';
 import movieRouter from './routes/movie.router.js';
-import { testDbConnection } from './config/database';
-import festivalRoutes from './routes/festival.route';
-import collaboratorRoutes from './routes/collaborator.route';
+import { testDbConnection } from './config/database.js';
+import festivalRoutes from './routes/festival.route.js';
+import collaboratorRoutes from './routes/collaborator.route.js';
 
 dotenv.config();
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import userModel from "../models/user.model";
+import UserModel from "../models/user.model.js";
 
 export interface User {
     "id": number,
@@ -15,7 +15,7 @@ export interface User {
 
 const getAllUsers = async (req: Request, res: Response) => {
     try {
-        const results = await userModel.findAll() as User[];
+        const results = await UserModel.findAll() as User[];
 
         if (results.length > 0) {
             return res.json({
@@ -42,7 +42,7 @@ const getAllUsers = async (req: Request, res: Response) => {
 const getOneUser = async (req: Request, res: Response) => {
     try {
         const id = req.params.id;
-        const results = await userModel.findOne(id) as User[];
+        const results = await UserModel.findOne(id) as User[];
 
         if (results.length === 0) {
             return res.status(404).json({
@@ -67,7 +67,7 @@ const getOneUser = async (req: Request, res: Response) => {
 
 
 const createUser = async (req: Request, res: Response) => { 
-    const results = await userModel.create(req.body.firstname, req.body.lastname, req.body.email, req.body.password, req.body.festival_id);
+    const results = await UserModel.create(req.body.firstname, req.body.lastname, req.body.email, req.body.password, req.body.festival_id);
     return res.json({success: true, data: results, message: 'User created successfully'
     });
 }
@@ -89,7 +89,7 @@ const createUser = async (req: Request, res: Response) => {
     }
 
     try {
-        const results = await userModel.update( id, {firstname, lastname, email, password, festival_id});
+        const results = await UserModel.update( id, {firstname, lastname, email, password, festival_id});
         return res.json({ success: true, data: results, message: 'User updated successfully' });
     } catch (error) {
         console.error("Erreur lors de la mise à jour de l'utilisateur : ", error);
@@ -101,7 +101,7 @@ const deleteUser = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-        const results = await userModel.deleted(id);
+        const results = await UserModel.deleted(id);
         return res.json({ success: true, data: results, message: 'User deleted successfully' });
     } catch (error) {
         console.error("Erreur lors de la suppression de l'utilisateur : ", error);

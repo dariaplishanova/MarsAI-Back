@@ -1,5 +1,5 @@
-import { RequestHandler, Request, Response } from "express";
-import collaboratorModel from "../models/collaborator.model";
+import { Request, Response } from "express";
+import CollaboratorModel from "../models/collaborator.model.js";
 
 
 export interface Collaborator {
@@ -16,13 +16,13 @@ interface Params {
 }   
 
 const getAllCollaborators = async (req: Request, res: Response) => {
-    const results = await collaboratorModel.findAll();
+    const results = await CollaboratorModel.findAll();
     return res.json({success: true, data: results});
 }
     
 const getOneCollaborator = async (req: Request, res: Response) => {
     const id = req.params.id;
-    const results = await collaboratorModel.findOne(id);
+    const results = await CollaboratorModel.findOne(id);
   
     return res.json({success: true, data: results});
 
@@ -30,7 +30,7 @@ const getOneCollaborator = async (req: Request, res: Response) => {
 
 
 const createCollaborator = async (req: Request, res: Response) => {
-    const results = await collaboratorModel.create(
+    const results = await CollaboratorModel.create(
         req.body.firstname,req.body.lastname,req.body.gender,req.body.email,req.body.job,req.body.movie_id
     );return res.json({
         success: true, data: results, message: 'Collaborator created successfully'
@@ -45,7 +45,7 @@ const  updateCollaborator = async (req: Request, res: Response) => {
     if (!firstname || !lastname || !gender || !email || !job || !movie_id) {
         return res.status(400).json({ message: "Champs manquants" });
     }
-    const results = await collaboratorModel.update(
+    const results = await CollaboratorModel.update(
         id, { firstname, lastname, gender, email, job, movie_id }
     );
     if (!results) {
@@ -59,7 +59,7 @@ const  updateCollaborator = async (req: Request, res: Response) => {
 
 const deleteCollaborator = async (req: Request<Params>, res: Response) => {
     try {
-        const deletedCollaborator = await collaboratorModel.deleted(req.params.id);
+        const deletedCollaborator = await CollaboratorModel.deleted(req.params.id);
         if (!deletedCollaborator) {
             return res.status(404).json({ message: 'Collaborator not found' });
         }

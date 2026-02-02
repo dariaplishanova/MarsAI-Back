@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
+   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint .",
     "format": "prettier --write ."
+  
   },
   "repository": {
     "type": "git",

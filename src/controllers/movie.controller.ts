@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import movieModel from '../models/movie.model';
-import { MovieType } from '../types/movie.type';
+import MovieModel from '../models/movie.model.js';
+import { MovieType } from '../types/movie.type.js';
 
 const getAllMovies = async (req: Request, res: Response) => {
   
   try {
-    const results =  await movieModel.findAll() as MovieType[];
+    const results =  await MovieModel.findAll() as MovieType[];
 
     if (results.length === 0) {
         res.status(200).json({
