@@ -1,5 +1,5 @@
 import { ResultSetHeader } from 'mysql2';
-import db from '../config/database.js';
+import db from '../config/database';
 
 
 const findAll = async () => {
