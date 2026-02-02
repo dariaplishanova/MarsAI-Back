@@ -1,15 +1,15 @@
 import express, { Request, Response } from 'express';
+import userRoutes from "./routes/user.routes.js";
 import dotenv from 'dotenv';
 import movieRouter from './routes/movie.router';
 import { testDbConnection } from './config/database';
+import festivalRoutes from './routes/festival.route.js';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-
 app.use(express.json());
-app.use('/movies', movieRouter)
 
 const startServer = async () => {
   try {
@@ -33,3 +33,7 @@ startServer();
 app.get('/', (req: Request, res: Response) => {
   res.send('Serveur MarsAI en mode ESM (EcmaScript Modules) !');
 });
+
+app.use('/users', userRoutes);
+app.use('/movies', movieRouter);
+app.use("/festivals", festivalRoutes);
