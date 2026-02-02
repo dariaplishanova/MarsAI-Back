@@ -1,4 +1,5 @@
 import db from '../config/database.js';
+import { ResultSetHeader } from 'mysql2';
 
 
 // Requete SQL pour faire une recherche de tout les festivals
@@ -38,7 +39,7 @@ const update = async (id: string, data: { name: string, description: string, sta
     const [result] = await db.execute(
         `UPDATE festival SET name = ?, description = ?, start_at = ?, end_at = ?, status = ?, booking_total = ? WHERE id = ?`,
         [data.name, data.description, data.start_at, data.end_at, data.status, data.booking_total, id]
-    )
+    );
 
     return result;
 }

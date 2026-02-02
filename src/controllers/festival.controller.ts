@@ -1,17 +1,22 @@
 import { Request, RequestHandler, Response } from 'express';
 import festivalModel from '../models/festival.model.js';
 
-
 type Params = {
   id: string; 
 };
-
-
 
 const getAllFestivals = async (req: Request, res: Response) => {
   const results = await festivalModel.findAll();
   return res.json({success: true, data: results});
 };
+
+const getFestivalById = async (req: Request<Params>, res: Response) => {
+    const festival = await festivalModel.findById(req.params.id);
+    if ((Array.isArray(festival) && festival.length === 0)) {
+      return res.status(404).json({ message: 'Festival not found' });
+    }
+    res.status(200).json(festival) 
+  } 
 
 
 const createFestival = async (req: Request, res: Response) => {
@@ -19,20 +24,7 @@ const createFestival = async (req: Request, res: Response) => {
     return res.json({success: true, data: results, message: 'Festival created successfully'
     });
   } 
-   
   
-
-
-const getFestivalById = async (req: Request<Params>, res: Response) => {
-
-    const festival = await festivalModel.findById(req.params.id);
-    if ((Array.isArray(festival) && festival.length === 0)) {
-      return res.status(404).json({ message: 'Festival not found' });
-    }
-    res.status(200).json(festival);
-  } 
-  
-
 const updateFestival = async (req: Request<Params>, res: Response) => {
   try {
     const { id } = req.params;

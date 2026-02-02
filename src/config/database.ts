@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+dotenv.config();
 
 interface MySQLError extends Error {
   code?: string;

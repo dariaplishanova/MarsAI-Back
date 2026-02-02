@@ -1,9 +1,10 @@
 import express, { Request, Response } from 'express';
-import userRoutes from "./routes/user.routes.js";
+import userRoutes from "./routes/user.routes";
 import dotenv from 'dotenv';
-import movieRouter from './routes/movie.router';
+import movieRouter from './routes/movie.router.js';
 import { testDbConnection } from './config/database';
-import festivalRoutes from './routes/festival.route.js';
+import festivalRoutes from './routes/festival.route';
+import collaboratorRoutes from './routes/collaborator.route';
 
 dotenv.config();
 
@@ -37,3 +38,4 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/users', userRoutes);
 app.use('/movies', movieRouter);
 app.use("/festivals", festivalRoutes);
+app.use("/collaborators", collaboratorRoutes);

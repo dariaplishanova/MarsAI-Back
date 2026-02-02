@@ -2,6 +2,7 @@ import express from 'express';
 import userController from '../controllers/user.controller.js';
 
 const router = express.Router();
+
 //Route pour récupérer tous les utilisateurs
 router.get('/', userController.getAllUsers);
 //Route pour récupérer un utilisateur par son id

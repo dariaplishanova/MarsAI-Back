@@ -2,6 +2,7 @@ import express from 'express';
 import festivalController from "../controllers/festival.controller.js";
 
 const router = express.Router();
+
 //Route pour récupérer tous les festivals
 router.get('/', festivalController.getAllFestivals);
 //Route pour récupérer un festival par son id
