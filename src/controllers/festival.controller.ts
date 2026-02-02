@@ -1,21 +1,51 @@
 import { Request, RequestHandler, Response } from 'express';
-import festivalModel from '../models/festival.model.js';
+import festivalModel from '../models/festival.model';
 
-type Params = {
-  id: string; 
-};
+export interface Festival {
+  id: number;
+  name: string;
+  decription: string;
+  created_at: Date | string;
+  start_at: Date | string;
+  end_at: Date | string;
+  status: 'Actif' | 'Inactif';
+  booking_total: number;
+}
 
 const getAllFestivals = async (req: Request, res: Response) => {
-  const results = await festivalModel.findAll();
-  return res.json({success: true, data: results});
+  try { 
+    const results = await festivalModel.findAll() as Festival[];
+    
+    if (results.length === 0) {
+        return res.status(200).json({
+            success: true,
+            message: "Aucun festival dans la base de donnée"
+        });
+    }
+
+    return res.status(200).json({
+        success: true,
+        data: results,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des festivaux : ", error)
+
+    return res.json({
+        success: false,
+        message: "Une erreur interne est survenue sur le serveur."
+    })
+  }
 };
 
 const getFestivalById = async (req: Request<Params>, res: Response) => {
-    const festival = await festivalModel.findById(req.params.id);
-    if ((Array.isArray(festival) && festival.length === 0)) {
-      return res.status(404).json({ message: 'Festival not found' });
-    }
-    res.status(200).json(festival) 
+    try {
+        const festival = await festivalModel.findById(req.params.id) as Festival[];
+  
+        if ((Array.isArray(festival) && festival.length === 0)) {
+          return res.status(404).json({ message: 'Festival not found' });
+        }
+            
+        res.status(200).json(festival);
   } 
 
 
