@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
-import userRoutes from "./routes/user.routes.js";
+import UserRoutes from "./routes/user.routes.js";
 import dotenv from 'dotenv';
-import movieRouter from './routes/movie.router.js';
+import MovieRouter from './routes/movie.router.js';
 import { testDbConnection } from './config/database.js';
-import festivalRoutes from './routes/festival.route.js';
-import collaboratorRoutes from './routes/collaborator.route.js';
+import FestivalRoutes from './routes/festival.route.js';
+import CollaboratorRoutes from './routes/collaborator.route.js';
 
 dotenv.config();
 
@@ -35,7 +35,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Serveur MarsAI en mode ESM (EcmaScript Modules) !');
 });
 
-app.use('/users', userRoutes);
-app.use('/movies', movieRouter);
-app.use("/festivals", festivalRoutes);
-app.use("/collaborators", collaboratorRoutes);
+app.use('/users', UserRoutes);
+app.use('/movies', MovieRouter);
+app.use("/festivals", FestivalRoutes);
+app.use("/collaborators", CollaboratorRoutes);

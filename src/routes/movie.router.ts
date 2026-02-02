@@ -1,10 +1,10 @@
 import express from 'express';
-import movieController from '../controllers/movie.controller.js';
+import MovieController from '../controllers/movie.controller.js';
 
 const router = express.Router();
 
 //Route pour récupérer tous les films
-router.get('/', movieController.getAllMovies);
+router.get('/', MovieController.getAllMovies);
 //Route pour récupérer un film par son id
 // router.get('/:id', movieController.getMovieById);
 // //Route pour la création d'un nouveau film

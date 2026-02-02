@@ -1,17 +1,17 @@
 import express from 'express';
-import festivalController from "../controllers/festival.controller.js";
+import FestivalController from "../controllers/festival.controller.js";
 
 const router = express.Router();
 
 //Route pour récupérer tous les festivals
-router.get('/', festivalController.getAllFestivals);
+router.get('/', FestivalController.getAllFestivals);
 //Route pour récupérer un festival par son id
-router.get('/:id', festivalController.getFestivalById);
+router.get('/:id', FestivalController.getFestivalById);
 //Route pour la création d'un nouveau festival
-router.post('/', festivalController.createFestival);
+router.post('/', FestivalController.createFestival);
 //Route pour la mise à jour d'un festival   
-router.put('/:id', festivalController.updateFestival);
+router.put('/:id', FestivalController.updateFestival);
 //Route pour la suppression d'un festival
-router.delete('/:id', festivalController.deleteFestival);   
+router.delete('/:id', FestivalController.deleteFestival);   
 
 export default router
