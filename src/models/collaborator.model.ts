@@ -6,7 +6,7 @@ const findAll = async () => {
     const [result] = await db.execute(
         'SELECT * FROM collaborator'
     )
-    console.log("Information :", result)
+    
     return result;
 }
 //--------------------------------------------------------------------------------
@@ -15,8 +15,8 @@ const findOne = async (id: string | string[]) => {
     const [result] = await db.execute(
         'SELECT * FROM collaborator WHERE id = ?',
         [id]
-        )
-console.log("Information :", result)
+    )
+    
     return result;
 }
 //--------------------------------------------------------------------------------
@@ -36,13 +36,18 @@ const update = async (id:  string | string[], data: { firstname: string, lastnam
         'UPDATE collaborator SET firstname = ?, lastname = ?, gender = ?, email = ?, job = ?, movie_id = ? WHERE id = ?',
         [data.firstname, data.lastname, data.gender, data.email, data.job, data.movie_id, id]
     );
+    
     return result;
 }
+
+//--------------------------------------------------------------------------------
+
 const deleted = async (id: string): Promise<ResultSetHeader> => {
     const [result] = await db.execute<ResultSetHeader>(
         `DELETE FROM collaborator WHERE id = ?`,
         [id]
     )
+    
     return result;
 }
 
