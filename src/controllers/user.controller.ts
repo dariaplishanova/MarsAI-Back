@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/user.model.js";
 
-interface User {
+export interface User {
     "id": number,
     "firstname": string,
     "lastname": string,
@@ -11,6 +11,7 @@ interface User {
     "updated_at": string,
     "festival_id": number
 }
+  
 
 const getAllUsers = async (req: Request, res: Response) => {
     try {
@@ -64,7 +65,57 @@ const getOneUser = async (req: Request, res: Response) => {
     }
 }
 
+
+const createUser = async (req: Request, res: Response) => { 
+    const results = await User.create(req.body.firstname, req.body.lastname, req.body.email, req.body.password, req.body.festival_id);
+    return res.json({success: true, data: results, message: 'User created successfully'
+    });
+}
+
+  const updateUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { firstname, lastname, email, password, festival_id } = req.body;
+
+    if (!id || !firstname || !lastname || !email) {
+      return res.status(400).json({ 
+          success: false, 
+          message: "Données manquantes : l'ID, le nom, le prénom et l'email sont obligatoires." 
+      });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ success: false, message: "Format d'email invalide." });
+    }
+
+    try {
+        const results = await User.update( id, {firstname, lastname, email, password, festival_id});
+        return res.json({ success: true, data: results, message: 'User updated successfully' });
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour de l'utilisateur : ", error);
+        return res.status(500).json({ success: false, message: 'Une erreur interne est survenue sur le serveur.' });
+    }
+}
+
+const deleteUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+        const results = await User.deleted(id);
+        return res.json({ success: true, data: results, message: 'User deleted successfully' });
+    } catch (error) {
+        console.error("Erreur lors de la suppression de l'utilisateur : ", error);
+        return res.status(500).json({ success: false, message: 'Une erreur interne est survenue sur le serveur.' });
+    }
+}   
+
+
 export default {
     getAllUsers,
-    getOneUser
+    getOneUser,
+    createUser,
+    updateUser,
+    deleteUser
+    
 }
+

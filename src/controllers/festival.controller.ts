@@ -29,7 +29,7 @@ const getFestivalById = async (req: Request<Params>, res: Response) => {
     if ((Array.isArray(festival) && festival.length === 0)) {
       return res.status(404).json({ message: 'Festival not found' });
     }
-    res.status(200).json(festival) as Response;
+    res.status(200).json(festival);
   } 
   
 
