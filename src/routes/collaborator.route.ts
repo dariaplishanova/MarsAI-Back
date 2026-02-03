@@ -13,4 +13,5 @@ router.post('/', CollaboratorController.createCollaborator);
 router.put('/:id', CollaboratorController.updateCollaborator);
 //Route pour la suppression d'un collaborateur
 router.delete('/:id', CollaboratorController.deleteCollaborator);
+
 export default router;

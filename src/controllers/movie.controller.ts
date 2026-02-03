@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import MovieModel from '../models/movie.model.js';
-import { MovieType } from '../types/movie.type.js';
+import { MovieType } from '../types/type.js';
+
 
 const getAllMovies = async (req: Request, res: Response) => {
   
@@ -8,8 +9,8 @@ const getAllMovies = async (req: Request, res: Response) => {
     const results =  await MovieModel.findAll() as MovieType[];
 
     if (results.length === 0) {
-        res.status(200).json({
-          success: true,
+        res.status(404).json({
+          success: false,
           message: "Aucune video n'a ete trouve." 
         });
     }
@@ -25,6 +26,8 @@ const getAllMovies = async (req: Request, res: Response) => {
     })
   }
 }
+//--------------------------------------------------------------------------------
+
 
 export default { 
   getAllMovies,  

@@ -1,41 +1,29 @@
 import { Request, Response } from "express";
 import CollaboratorModel from "../models/collaborator.model.js";
-
-
-export interface Collaborator {
-    "id": number,
-    "firstname": string,
-    "lastname": string,
-    "email": string,
-    "role": string,
-    "movie_id": number
-}
-
-interface Params {
-    id: string;
-}   
-
+import { Collaborator } from "../types/type.js";
+import { Params } from "../types/type.js";
+ 
 const getAllCollaborators = async (req: Request, res: Response) => {
-    const results = await CollaboratorModel.findAll();
-    return res.json({success: true, data: results});
+    const results = await CollaboratorModel.findAll() as Collaborator[]; 
+    return res.status(201).json({success: true, data: results});
 }
-    
+//--------------------------------------------------------------------------------
+
 const getOneCollaborator = async (req: Request, res: Response) => {
     const id = req.params.id;
-    const results = await CollaboratorModel.findOne(id);
-  
-    return res.json({success: true, data: results});
+    const results = await CollaboratorModel.findOne(id) as Collaborator[];
+    return res.status(201).json({success: true, data: results});
 
 }
-
+//--------------------------------------------------------------------------------
 
 const createCollaborator = async (req: Request, res: Response) => {
     const results = await CollaboratorModel.create(
         req.body.firstname,req.body.lastname,req.body.gender,req.body.email,req.body.job,req.body.movie_id
-    );return res.json({
-        success: true, data: results, message: 'Collaborator created successfully'
-    });
+    );
+    return res.status(201).json({success: true, data: results, message: 'Collaborator créer avec succès'});
 }
+//--------------------------------------------------------------------------------
 
 const  updateCollaborator = async (req: Request, res: Response) => {
     try {
@@ -49,26 +37,27 @@ const  updateCollaborator = async (req: Request, res: Response) => {
         id, { firstname, lastname, gender, email, job, movie_id }
     );
     if (!results) {
-        return res.status(404).json({ message: 'Collaborator not found' });
+        return res.status(404).json({ message: 'Collaborator non trouvé' });
     }
-    res.status(200).json({ message: 'Collaborator updated successfully' });
+    res.status(200).json({ message: 'Collaborator mis à jour avec succès' });
 } catch (error) {
-    res.status(500).json({ message: 'Error updating collaborator', error });
+    res.status(500).json({ message: 'Erreur lors de la mise à jour du collaborateur', error });
 }
 }
+//--------------------------------------------------------------------------------
 
 const deleteCollaborator = async (req: Request<Params>, res: Response) => {
     try {
         const deletedCollaborator = await CollaboratorModel.deleted(req.params.id);
         if (!deletedCollaborator) {
-            return res.status(404).json({ message: 'Collaborator not found' });
+            return res.status(404).json({ message: 'Collaborator non trouvé' });
         }
-        res.status(200).json({ message: 'Collaborator deleted successfully' });
+        res.status(200).json({ message: 'Collaborator supprimé avec succès' });
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting collaborator', error });
+        res.status(500).json({ message: 'Erreur lors de la suppression du collaborateur', error });
     }
 };
-
+//--------------------------------------------------------------------------------
 
 export default {
     getAllCollaborators,
