@@ -6,28 +6,16 @@ import { MovieType } from '../types/type.js';
 const getAllMovies = async (req: Request, res: Response) => {
   
   try {
-    const results =  await MovieModel.findAll() as MovieType[];
-
+    const results =  await MovieModel.findAll();
     if (results.length === 0) {
-        res.status(404).json({
-          success: false,
-          message: "Aucune video n'a ete trouve." 
-        });
+      res.status(404).json({success: false, message: "Aucune video n'a ete trouve."});
     }
-
-    res.status(200).json({
-      success: true,
-      data: results
-    });
-  }  catch {
-    res.status(500).json({
-      success: false,
-      message: "Erreur interne survenue sur le serveur."
-    })
+      res.status(201).json({success: true, data: results, 'message': 'Liste des films trouvé'});
+  } catch(error) {
+    res.status(500).json({success: false, message: "Erreur SERVEUR", error})
   }
 }
 //--------------------------------------------------------------------------------
-
 
 export default { 
   getAllMovies,  

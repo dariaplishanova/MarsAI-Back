@@ -5,6 +5,7 @@ import MovieRouter from './routes/movie.router.js';
 import { testDbConnection } from './config/database.js';
 import FestivalRoutes from './routes/festival.route.js';
 import CollaboratorRoutes from './routes/collaborator.route.js';
+import DirectorRoutes from './routes/director.route.js'
 
 dotenv.config();
 
@@ -39,3 +40,4 @@ app.use('/users', UserRoutes);
 app.use('/movies', MovieRouter);
 app.use("/festivals", FestivalRoutes);
 app.use("/collaborators", CollaboratorRoutes);
+app.use("/directors", DirectorRoutes)
