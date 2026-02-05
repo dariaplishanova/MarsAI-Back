@@ -6,15 +6,22 @@ import { Params } from "../types/type.js";
 
 
 const getAllCollaborators = async (req: Request, res: Response) => {
-    const results = await CollaboratorModel.findAll() as CollaboratorType[]; 
+    try{
+    const results = await CollaboratorModel.findAll();
+    if (results.length === 0) {
+        return res.status(404).json({ 'success': false, 'message': 'Collaborateur introuvable'})
+    } 
     return res.status(200).json({success: true, data: results});
+}catch(error){
+    return res.status(500).json({'succes': false, 'message': 'Erreur SERVEUR', error})
+}
 }
 //--------------------------------------------------------------------------------
 
 const getOneCollaborator = async (req: Request<Params>, res: Response) => {
    try {
     const id = req.params.id;
-    const results = await CollaboratorModel.findOne(id) as CollaboratorType[];
+    const results = await CollaboratorModel.findOne(id);
         if (results.length === 0) {
           res.status(404).json({'success': false, 'message': 'Collaborateur introuvable'})  
         }

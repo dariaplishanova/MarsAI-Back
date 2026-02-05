@@ -17,9 +17,9 @@ const findOne = async (id: number) => {
 //--------------------------------------------------------------------------------
 
 
-const create = async (firstname: string, lastname: string, email: string, password: string, festival_id: number) => {
+const create = async (user: UserType) => {
     const query = "INSERT INTO user (firstname, lastname, email, password, created_at,updated_at, festival_id) VALUES (?, ?, ?, ?, NOW(), NOW(), ?)";
-    const [result] = await db.execute(query, [firstname, lastname, email, password, festival_id]);
+    const [result] = await db.execute(query, [user.firstname, user.lastname, user.email, user.password, user.festival_id]);
     return result as UserType[];
 };
 //--------------------------------------------------------------------------------

@@ -9,7 +9,7 @@ const getAllFestivals = async (req: Request, res: Response) => {
     if (results.length === 0) {
         return res.status(404).json({ success: false, message: "Aucun festival dans la base de donnée"});
     }
-    return res.status(201).json({success: true, data: results});
+    return res.status(200).json({success: true, data: results});
   } catch (error) {
     console.error("Erreur lors de la récupération des festivaux : ", error)
     return res.status(500).json({ success: false, message: "Une erreur interne est survenue sur le serveur."})
@@ -21,7 +21,7 @@ const getFestivalById = async (req: Request<Params>, res: Response) => {
     try {
         const id = req.params.id
         const festival = await FestivalModel.findById(id);
-        if ((Array.isArray(festival) && festival.length === 0)) {
+        if (festival.length === 0) {
           return res.status(404).json({ message: 'Aucun festival trouvé' });
         } 
         res.status(200).json(festival);
@@ -35,6 +35,9 @@ const createFestival = async (req: Request, res: Response) => {
  try {
         const festival: FestivalType = req.body
         const results = await FestivalModel.create(festival);
+        if (!results) {
+          return res.status(400).json({ success: false, 'message': 'Erreur lors de la création du Festival'})
+        }
         return res.status(201).json({success: true, data: results, message: 'Festival créé avec succès'});
   }catch(error) {
     return res.status(500).json({ success: false, message: 'Erreur lors de la création du réalisateur'})
@@ -47,7 +50,7 @@ const updateFestival = async (req: Request<Params>, res: Response) => {
     const id  = req.params.id;
     const festival: FestivalType = req.body;
     const results = await FestivalModel.update(id, festival)
-    if (!festival) {
+    if (!results) {
       return res.status(404).json({ message: 'Festival non trouvé' });
     }
     res.status(201).json({ message: 'Festival mis à jour avec succès' });

@@ -33,9 +33,17 @@ const getOneUser = async (req: Request<Params>, res: Response) => {
 //--------------------------------------------------------------------------------
 
 const createUser = async (req: Request, res: Response) => { 
-    const results = await UserModel.create(req.body.firstname, req.body.lastname, req.body.email, req.body.password, req.body.festival_id);
-    return res.status(201).json({success: true, data: results, message: 'User créer avec succès'
-    });
+    try {
+    const user: UserType = req.body
+    const results = await UserModel.create(user);
+    if (!results) {
+        return res.status(400).json({ success: false, message: 'Erreur inscription Utilisateur'})
+    }
+        return res.status(201).json({success: true, data: results, message: 'Utilisateur créer avec succès'
+    })
+}catch(error){
+        return res.status(500).json({success: false, message: 'Erreur SERVEUR', error})
+}
 }
 //--------------------------------------------------------------------------------
   const updateUser = async (req: Request<Params>, res: Response) => {
