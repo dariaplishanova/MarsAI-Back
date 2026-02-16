@@ -14,7 +14,7 @@ const pool = mysql.createPool({
   port: Number(process.env.DB_PORT) || 3306,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
 export const testDbConnection = async (): Promise<void> => {
@@ -23,16 +23,16 @@ export const testDbConnection = async (): Promise<void> => {
     console.log('✅ Connexion au Pool MySQL réussie');
     connection.release(); // On libère la ligne immédiatement
   } catch (error: unknown) {
-    console.error("❌ Impossible de joindre la base de données via le Pool :");
+    console.error('❌ Impossible de joindre la base de données via le Pool :');
 
     if (error instanceof Error) {
       const mysqlError = error as MySQLError;
       if (mysqlError.code === 'ENOTFOUND') {
-        console.error("Hôte introuvable. Vérifiez DB_HOST dans le .env");
+        console.error('Hôte introuvable. Vérifiez DB_HOST dans le .env');
       } else if (mysqlError.code === 'ER_ACCESS_DENIED_ERROR') {
-        console.error("Accès refusé. Vérifiez DB_USER et DB_PASSWORD");
+        console.error('Accès refusé. Vérifiez DB_USER et DB_PASSWORD');
       } else if (mysqlError.code === 'ECONNREFUSED') {
-        console.error("Connexion refusée. Le serveur MySQL est-il lancé ?");
+        console.error('Connexion refusée. Le serveur MySQL est-il lancé ?');
       } else {
         console.error(`Erreur : ${mysqlError.message}`);
       }
