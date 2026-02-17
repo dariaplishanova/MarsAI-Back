@@ -27,10 +27,14 @@ const login = async (req: Request<Params>, res: Response) => {
       }
     );
     return res.status(200).json({
-      success: true,
-      data: users,
-      message: 'Connexion effectué avec succés !',
-    });
+  success: true,
+  token,
+  user: {
+    id: user.id,
+    email: user.email,
+  },
+  message: 'Connexion effectuée avec succès !',
+});
   } catch (error) {
     console.error('Erreur lors de la récupération des utilisateurs : ', error);
     return res.status(500).json({
@@ -51,9 +55,7 @@ const register = async (req: Request, res: Response) => {
         .json({ success: false, message: 'Erreur inscription Utilisateur' });
     }
     return res.status(201).json({
-      id: user.insertId,
       success: true,
-      data: results,
       message: 'Utilisateur créer avec succès',
     });
   } catch (error) {

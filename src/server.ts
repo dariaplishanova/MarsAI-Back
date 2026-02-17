@@ -7,6 +7,7 @@ import FestivalRoutes from './routes/festival.route.js';
 import CollaboratorRoutes from './routes/collaborator.route.js';
 import DirectorRoutes from './routes/director.route.js';
 import authRoute from './routes/auth.route.js';
+import cors from 'cors';
 
 dotenv.config();
 
@@ -50,10 +51,6 @@ app.use('/movies', MovieRouter);
 app.use("/festivals", FestivalRoutes);
 app.use("/collaborators", CollaboratorRoutes);
 app.use("/directors", DirectorRoutes)
-
-function cors(arg0: { origin: string; }): any {
-  throw new Error('Function not implemented.');
-}
 
 app.use('/festivals', FestivalRoutes);
 app.use('/collaborators', CollaboratorRoutes);
