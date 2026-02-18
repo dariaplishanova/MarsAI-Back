@@ -6,15 +6,11 @@ const getAllDirectors = async (req: Request, res: Response) => {
   try {
     const result = await DirectorModel.findAll();
     if (result.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Aucun festival enregistré' });
+      return res.status(404).json({ success: false, message: 'Aucun festival enregistré' });
     }
     return res.status(200).json({ success: true, data: result });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: 'Erreur SERVEUR', error });
+    return res.status(500).json({ success: false, message: 'Erreur SERVEUR', error });
   }
 };
 //--------------------------------------------------------------------------------
@@ -30,17 +26,11 @@ const getDirectorById = async (req: Request<Params>, res: Response) => {
     }
     const result = await DirectorModel.findById(id);
     if (result.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Réalisateur introuvable' });
+      return res.status(404).json({ success: false, message: 'Réalisateur introuvable' });
     }
-    return res
-      .status(200)
-      .json({ success: true, data: result, message: 'Réalisateur trouvé ' });
+    return res.status(200).json({ success: true, data: result, message: 'Réalisateur trouvé ' });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: 'Erreur SERVEUR', error });
+    return res.status(500).json({ success: false, message: 'Erreur SERVEUR', error });
   }
 };
 //--------------------------------------------------------------------------------

@@ -121,3 +121,8 @@ export interface LoginType {
   password: string;
   hashedPassword: string;
 }
+
+export interface AppError extends Error {
+  status?: number;
+  statusCode?: number;
+}

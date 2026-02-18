@@ -18,18 +18,11 @@ const create = async (
   release_date: string,
   duration: number,
   rating: number,
-  festival_id: number
+  festival_id: number,
 ) => {
   const query =
     'INSERT INTO movie (title, description, release_date, duration, rating, festival_id) VALUES (?, ?, ?, ?, ?, ?)';
-  const [result] = await db.execute(query, [
-    title,
-    description,
-    release_date,
-    duration,
-    rating,
-    festival_id,
-  ]);
+  const [result] = await db.execute(query, [title, description, release_date, duration, rating, festival_id]);
   return result as MovieType[];
 };
 //--------------------------------------------------------------------------------

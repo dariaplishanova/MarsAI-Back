@@ -6,9 +6,7 @@ const getAllMovies = async (req: Request, res: Response) => {
   try {
     const results = await MovieModel.findAll();
     if (results.length === 0) {
-      res
-        .status(404)
-        .json({ success: false, message: "Aucune video n'a ete trouve." });
+      res.status(404).json({ success: false, message: "Aucune video n'a ete trouve." });
     }
     res.status(201).json({
       success: true,

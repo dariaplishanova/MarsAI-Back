@@ -7,15 +7,11 @@ const getAllCollaborators = async (req: Request, res: Response) => {
   try {
     const results = await CollaboratorModel.findAll();
     if (results.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Collaborateur introuvable' });
+      return res.status(404).json({ success: false, message: 'Collaborateur introuvable' });
     }
     return res.status(200).json({ success: true, data: results });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ succes: false, message: 'Erreur SERVEUR', error });
+    return res.status(500).json({ succes: false, message: 'Erreur SERVEUR', error });
   }
 };
 //--------------------------------------------------------------------------------
@@ -25,17 +21,11 @@ const getOneCollaborator = async (req: Request<Params>, res: Response) => {
     const id = req.params.id;
     const results = await CollaboratorModel.findOne(id);
     if (results.length === 0) {
-      res
-        .status(404)
-        .json({ success: false, message: 'Collaborateur introuvable' });
+      res.status(404).json({ success: false, message: 'Collaborateur introuvable' });
     }
-    return res
-      .status(200)
-      .json({ success: true, data: results, message: 'Collaborateur trouvé' });
+    return res.status(200).json({ success: true, data: results, message: 'Collaborateur trouvé' });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: 'Erreur SERVEUR', error });
+    return res.status(500).json({ success: false, message: 'Erreur SERVEUR', error });
   }
 };
 //--------------------------------------------------------------------------------
@@ -72,9 +62,7 @@ const updateCollaborator = async (req: Request<Params>, res: Response) => {
         message: 'Erreur lors de la mise à jour du Collaborateur',
       });
     }
-    return res
-      .status(201)
-      .json({ message: 'Collaborateur mis à jour avec succès' });
+    return res.status(201).json({ message: 'Collaborateur mis à jour avec succès' });
   } catch (error) {
     res.status(500).json({ message: 'Erreur SERVEUR', error });
   }

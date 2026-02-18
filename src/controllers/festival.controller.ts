@@ -31,9 +31,7 @@ const getFestivalById = async (req: Request<Params>, res: Response) => {
     }
     res.status(200).json(festival);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Erreur lors de la récupération du festival', error });
+    res.status(500).json({ message: 'Erreur lors de la récupération du festival', error });
   }
 };
 //--------------------------------------------------------------------------------
@@ -72,9 +70,7 @@ const updateFestival = async (req: Request<Params>, res: Response) => {
     }
     res.status(201).json({ message: 'Festival mis à jour avec succès' });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Erreur lors de la mise à jour du festival', error });
+    res.status(500).json({ message: 'Erreur lors de la mise à jour du festival', error });
   }
 };
 //--------------------------------------------------------------------------------
@@ -88,9 +84,7 @@ const deleteFestival = async (req: Request<Params>, res: Response) => {
     }
     res.status(200).json({ message: 'Festival supprimé avec succès' });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Erreur lors de la suppression du festival', error });
+    res.status(500).json({ message: 'Erreur lors de la suppression du festival', error });
   }
 };
 //--------------------------------------------------------------------------------

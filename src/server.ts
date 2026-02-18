@@ -1,12 +1,10 @@
-import express, { Request, Response } from 'express';
-import UserRoutes from './routes/user.routes.js';
+import express, { NextFunction, Request, Response } from 'express';
+import userRoutes from './routes/user.routes.js';
 import dotenv from 'dotenv';
-import MovieRouter from './routes/movie.router.js';
+import movieRouter from './routes/movie.router.js';
 import { testDbConnection } from './config/database.js';
-import FestivalRoutes from './routes/festival.route.js';
-import CollaboratorRoutes from './routes/collaborator.route.js';
-import DirectorRoutes from './routes/director.route.js';
-import authRoute from './routes/auth.route.js';
+import festivalRoutes from './routes/festival.route.js';
+import { errorMiddleware } from './middlewares/error.middleware.js';
 
 dotenv.config();
 
@@ -23,10 +21,7 @@ const startServer = async () => {
         console.log(`🚀 Serveur prêt sur http://localhost:${port}`);
       })
       .on('error', (err: Error) => {
-        console.error(
-          '❌ Impossible de lancer le serveur Express:',
-          err.message
-        );
+        console.error('❌ Impossible de lancer le serveur Express:', err.message);
         process.exit(1);
       });
   } catch (error) {
@@ -37,13 +32,12 @@ const startServer = async () => {
 
 startServer();
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
   res.send('Serveur MarsAI en mode ESM (EcmaScript Modules) !');
 });
 
-app.use('/users', UserRoutes);
-app.use('/movies', MovieRouter);
-app.use('/festivals', FestivalRoutes);
-app.use('/collaborators', CollaboratorRoutes);
-app.use('/directors', DirectorRoutes);
-app.use('/auth', authRoute);
+app.use('/users', userRoutes);
+app.use('/movies', movieRouter);
+app.use('/festivals', festivalRoutes);
+
+app.use(errorMiddleware);

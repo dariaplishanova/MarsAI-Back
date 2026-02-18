@@ -8,9 +8,7 @@ const findAll = async () => {
 //--------------------------------------------------------------------------------
 
 const findById = async (id: number) => {
-  const [result] = await db.execute('SELECT * FROM festival WHERE id = ?', [
-    id,
-  ]);
+  const [result] = await db.execute('SELECT * FROM festival WHERE id = ?', [id]);
   return result as FestivalType[];
 };
 //--------------------------------------------------------------------------------

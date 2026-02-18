@@ -9,7 +9,7 @@ const findAll = async () => {
 //--------------------------------------------------------------------------------
 
 const findOne = async (id: number) => {
-  const query = 'SELECT * FROM user WHERE id = ?';
+  const query = 'SELCET * FROM user WHERE id = ?';
   const [result] = await db.execute(query, [id]);
   return result as UserType[];
 };
@@ -37,7 +37,7 @@ const update = async (
     email: string;
     password: string;
     festival_id: number;
-  }
+  },
 ) => {
   const query =
     'UPDATE user SET firstname = ?, lastname = ?, email = ?, password = ?, updated_at = NOW(), festival_id = ? WHERE id = ?';

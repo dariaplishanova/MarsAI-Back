@@ -8,9 +8,7 @@ const findAll = async () => {
 //--------------------------------------------------------------------------------
 
 const findOne = async (id: number) => {
-  const [result] = await db.execute('SELECT * FROM collaborator WHERE id = ?', [
-    id,
-  ]);
+  const [result] = await db.execute('SELECT * FROM collaborator WHERE id = ?', [id]);
   return result as CollaboratorType[];
 };
 //--------------------------------------------------------------------------------
