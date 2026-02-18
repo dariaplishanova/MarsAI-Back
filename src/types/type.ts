@@ -46,7 +46,7 @@ export interface CollaboratorType {
   movie_id: number;
 }
 export interface DirectorType {
-  id: number;
+  id?: number;
   firstname: string;
   lastname: string;
   genre: 'M.' | 'Mme';
@@ -72,8 +72,8 @@ export interface DirectorType {
     | 'Partenaire'
     | 'Autre';
   newsletter: boolean;
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
 }
 export interface EventType {
   id: number;

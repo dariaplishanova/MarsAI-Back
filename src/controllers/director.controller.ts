@@ -23,10 +23,7 @@ const getDirectorById = async (req: Request<Params>, res: Response) => {
   try {
     const id = req.params.id;
     if (!id) {
-      console.error('[getDirectorById] id requis.');
-      res.status(404).json({
-        success: false,
-      });
+      return res.status(400).json({ success: false, message: 'ID requis.' });
     }
     const result = await directorModel.findById(id);
     if (result.length === 0) {
@@ -47,23 +44,39 @@ const getDirectorById = async (req: Request<Params>, res: Response) => {
 
 const createDirector = async (req: Request, res: Response) => {
   try {
-    const director: DirectorType = req.body;
-    const results = await directorModel.create(director);
-    if (!results) {
-      return res.status(404).json({
-        success: false,
-        message: 'Erreur dans la création du Réalisateur',
-      });
-    }
-    return res.status(201).json({
-      success: true,
-      data: results,
-      message: 'Réalisateur créer avec succès',
-    });
+    const data = req.body; // Les données brutes du Frontend
+
+    // L'étape de TRADUCTION (Mapping)
+    const newDirector: DirectorType = {
+      // Colonne BDD      <--   Donnée Frontend
+      firstname:          data.firstName, 
+      lastname:           data.lastName,
+      genre:              data.civility,   // Traduit "civility" en "genre"
+      birthday:           data.birthDate,
+      email:              data.email,
+      mobile:             data.mobile,
+      address:            data.address,
+      zip_code:           data.postCode,   // Traduit "postCode" en "zip_code" (CRUCIAL)
+      town:               data.city,       // Traduit "city" en "town"
+      country:            data.country,
+      job:                data.job,
+      youtube_url: data.youtube,
+  instagram_url: data.instagram,
+  linkedin_url: data.linkedin,
+  facebook_url: data.facebook,
+  twitter_url: data.twitter,
+      question_about:     data.source,
+      newsletter:         data.newsletter
+    };
+
+    // Maintenant on envoie l'objet TRADUIT au modèle
+    const result = await directorModel.create(newDirector);
+
+    return res.status(201).json({ success: true, data: result });
+
   } catch (error) {
-    res.status(500).json({ message: 'Erreur SERVEUR', error });
+    return res.status(500).json({ message: 'Erreur Serveur', error });
   }
-  //--------------------------------------------------------------------------------
 };
 export default {
   getAllDirectors,
