@@ -52,7 +52,7 @@ const create = async (movie: MovieType): Promise<ResultSetHeader> => {
     movie.ia_type,
     movie.status || 'pending',
     movie.created_at,
-    movie.director_id
+    movie.director_id,
   ]);
 
   return result;

@@ -7,14 +7,12 @@ const findAll = async (): Promise<UserRow[]> => {
   const [rows] = await db.execute<UserRow[]>(query);
   return rows;
 };
-//--------------------------------------------------------------------------------
 
 const findOne = async (id: number): Promise<UserRow | null> => {
   const query = 'SELECT * FROM user WHERE id = ?';
   const [result] = await db.execute<UserRow[]>(query, [id]);
   return result.length > 0 ? result[0] : null;
 };
-//--------------------------------------------------------------------------------
 
 const create = async (user: UserType): Promise<ResultSetHeader> => {
   const query = `INSERT INTO user (firstname, lastname, email, password, created_at,updated_at, festival_id) 
@@ -29,7 +27,6 @@ const create = async (user: UserType): Promise<ResultSetHeader> => {
   ]);
   return result;
 };
-//--------------------------------------------------------------------------------
 
 const update = async (id: number, data: Partial<UserType>): Promise<ResultSetHeader> => {
   const query =
@@ -46,14 +43,12 @@ const update = async (id: number, data: Partial<UserType>): Promise<ResultSetHea
 
   return result;
 };
-//--------------------------------------------------------------------------------
 
 const deleted = async (id: number): Promise<ResultSetHeader> => {
   const query = 'DELETE FROM user WHERE id = ?';
   const [result] = await db.execute<ResultSetHeader>(query, [id]);
   return result;
 };
-//--------------------------------------------------------------------------------
 
 export default {
   findAll,

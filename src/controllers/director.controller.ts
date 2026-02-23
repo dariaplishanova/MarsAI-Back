@@ -39,31 +39,30 @@ const createDirector = async (req: Request, res: Response) => {
     // L'étape de TRADUCTION (Mapping)
     const newDirector: DirectorType = {
       // Colonne BDD      <--   Donnée Frontend
-      firstname:          data.firstName, 
-      lastname:           data.lastName,
-      genre:              data.civility,   // Traduit "civility" en "genre"
-      birthday:           data.birthDate,
-      email:              data.email,
-      mobile:             data.mobile,
-      address:            data.address,
-      zip_code:           data.postCode,   // Traduit "postCode" en "zip_code" (CRUCIAL)
-      town:               data.city,       // Traduit "city" en "town"
-      country:            data.country,
-      job:                data.job,
+      firstname: data.firstName,
+      lastname: data.lastName,
+      genre: data.civility, // Traduit "civility" en "genre"
+      birthday: data.birthDate,
+      email: data.email,
+      mobile: data.mobile,
+      address: data.address,
+      zip_code: data.postCode, // Traduit "postCode" en "zip_code" (CRUCIAL)
+      town: data.city, // Traduit "city" en "town"
+      country: data.country,
+      job: data.job,
       youtube_url: data.youtube,
-  instagram_url: data.instagram,
-  linkedin_url: data.linkedin,
-  facebook_url: data.facebook,
-  twitter_url: data.twitter,
-      question_about:     data.source,
-      newsletter:         data.newsletter
+      instagram_url: data.instagram,
+      linkedin_url: data.linkedin,
+      facebook_url: data.facebook,
+      twitter_url: data.twitter,
+      question_about: data.source,
+      newsletter: data.newsletter,
     };
 
     // Maintenant on envoie l'objet TRADUIT au modèle
     const result = await directorModel.create(newDirector);
 
     return res.status(201).json({ success: true, data: result });
-
   } catch (error) {
     return res.status(500).json({ message: 'Erreur Serveur', error });
   }

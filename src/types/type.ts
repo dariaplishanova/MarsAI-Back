@@ -1,4 +1,4 @@
-import { RowDataPacket } from "mysql2/promise";
+import { RowDataPacket } from 'mysql2/promise';
 import { Request } from 'express';
 
 export interface MovieType {
@@ -78,13 +78,13 @@ export interface DirectorType {
   facebook_url: string;
   twitter_url: string;
   question_about:
-  | 'Réseaux sociaux'
-  | 'Moteur de recherche'
-  | 'Bouche-à-oreille'
-  | 'Presse / Média'
-  | 'Autre festival'
-  | 'Partenaire'
-  | 'Autre';
+    | 'Réseaux sociaux'
+    | 'Moteur de recherche'
+    | 'Bouche-à-oreille'
+    | 'Presse / Média'
+    | 'Autre festival'
+    | 'Partenaire'
+    | 'Autre';
   newsletter: boolean;
   created_at?: Date;
   updated_at?: Date;
@@ -154,6 +154,6 @@ export type RequestParams<P> = Request<P, Record<string, never>, Record<string, 
 export type RequestParamsBody<P, T> = Request<P, Record<string, never>, T>;
 export type RequestEmpty = Request<Record<string, never>, Record<string, never>, Record<string, never>>;
 
-export interface UserRow extends RowDataPacket, UserType { }
-export interface MovieRow extends RowDataPacket, MovieType { }
-export interface FestivalRow extends RowDataPacket, FestivalType { }
+export interface UserRow extends RowDataPacket, UserType {}
+export interface MovieRow extends RowDataPacket, MovieType {}
+export interface FestivalRow extends RowDataPacket, FestivalType {}

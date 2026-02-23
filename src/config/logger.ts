@@ -5,7 +5,7 @@ const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.errors({ stack: true }),
-    winston.format.json()
+    winston.format.json(),
   ),
   transports: [
     // Écrit toutes les erreurs dans 'error.log'
@@ -17,15 +17,17 @@ const logger = winston.createLogger({
 
 // En développement, on affiche aussi dans la console avec des couleurs
 if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.printf(({ timestamp, level, message }) => {
-        // C'est ici que l'on définit l'ordre d'affichage pour la console
-        return `[${timestamp}] ${level}: ${message}`;
-      })
-    ),
-  }));
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.printf(({ timestamp, level, message }) => {
+          // C'est ici que l'on définit l'ordre d'affichage pour la console
+          return `[${timestamp}] ${level}: ${message}`;
+        }),
+      ),
+    }),
+  );
 }
 
 export default logger;

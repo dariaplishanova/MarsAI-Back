@@ -10,31 +10,25 @@ const login = async (req: Request<Params>, res: Response) => {
     const users = await AuthModel.findByEmail(email);
 
     if (users.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Cet utilisateur est introuvable' });
+      return res.status(404).json({ success: false, message: 'Cet utilisateur est introuvable' });
     }
     const user = users[0];
     const isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).send('Identifiants invalides');
     }
-    const token = jwt.sign(
-      { userId: user.id },
-      process.env.JWT_SECRET as string,
-      {
-        expiresIn: '1h',
-      }
-    );
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, {
+      expiresIn: '1h',
+    });
     return res.status(200).json({
-  success: true,
-  token,
-  user: {
-    id: user.id,
-    email: user.email,
-  },
-  message: 'Connexion effectuée avec succès !',
-});
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+      message: 'Connexion effectuée avec succès !',
+    });
   } catch (error) {
     console.error('Erreur lors de la récupération des utilisateurs : ', error);
     return res.status(500).json({
@@ -50,18 +44,14 @@ const register = async (req: Request, res: Response) => {
     const results = await AuthModel.create(user);
 
     if (!results) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Erreur inscription Utilisateur' });
+      return res.status(400).json({ success: false, message: 'Erreur inscription Utilisateur' });
     }
     return res.status(201).json({
       success: true,
       message: 'Utilisateur créer avec succès',
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: 'Erreur SERVEUR', error });
+    return res.status(500).json({ success: false, message: 'Erreur SERVEUR', error });
   }
 };
 

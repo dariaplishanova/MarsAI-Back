@@ -35,21 +35,23 @@ const startServer = async () => {
   }
 };
 
-startServer();
+await startServer();
 
 app.get('/', (_req: Request, res: Response) => {
   res.send('Bienvenue sur MarsAI, le festival des futurs souhaitables !');
 });
 
-app.use(cors({
-  origin: "http://localhost:5173"
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+  }),
+);
 
 app.use('/users', UserRoutes);
 app.use('/movies', MovieRoutes);
-app.use("/festivals", FestivalRoutes);
-app.use("/collaborators", CollaboratorRoutes);
-app.use("/directors", DirectorRoutes)
+app.use('/festivals', FestivalRoutes);
+app.use('/collaborators', CollaboratorRoutes);
+app.use('/directors', DirectorRoutes);
 
 app.use('/festivals', FestivalRoutes);
 app.use('/collaborators', CollaboratorRoutes);

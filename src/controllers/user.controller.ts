@@ -9,7 +9,7 @@ const getAllUsers = async (_req: RequestEmpty, res: Response) => {
   const results = await UserModel.findAll();
 
   if (results.length === 0) {
-    logger.warn('Aucun utilisateur présent dans la base de données');
+    logger.warn('Aucun utilisateur présent dans la base de données', 404, "warn");
     return res.status(200).json({
       success: false,
       data: [],
@@ -32,14 +32,13 @@ const getOneUser = async (req: RequestParams<Params>, res: Response) => {
 
   if (!user) {
     logger.warn(`L'ID ${id} est introuvable.`);
-    return sendError('Cet utilisateur est introuvable.');
+    return sendError('Cet utilisateur est introuvable.', 404, "warn");
   }
 
   logger.info(`Utilisateurs récupéré avec succès`);
   return res.status(200).json({
     success: true,
     data: user,
-    message: 'Utilisateur trouvé'
   });
 };
 
@@ -51,12 +50,11 @@ const createUser = async (req: RequestBody<UserType>, res: Response) => {
   const results = await UserModel.create({ ...userData, password: hashedPassword });
 
   if (results.affectedRows === 0) {
-    logger.warn(`Création d'un utilisateur intérompue.`);
-    sendError('Erreur inscription Utilisateur');
+    sendError("Échec inattendu côté serveur lors de l\'insertion.", 500, "error");
   }
 
   const userId = results.insertId;
-   logger.info(`Nouvel utilisateur créé avec l'id ${userId}.`);
+  logger.info(`Nouvel utilisateur créé avec l'id ${userId}.`);
 
   return res.status(201).json({
     success: true,
@@ -72,19 +70,19 @@ const updateUser = async (req: RequestParamsBody<Params, UserType>, res: Respons
   const user = req.body;
 
   if (!id || !user || !user.email) {
-    logger.error(`Tous les champs sont requis.`);
-    sendError('Veuillez remplir tous les champs');
+    logger.error(`Erreur de syntaxe ou données manquantes dans la requête.`);
+    sendError('Erreur de syntaxe ou données manquantes dans la requête.');
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(user.email)) {
-    logger.error(`Le format de l\'email est invalide.`);
-    sendError('Format d\'email invalide.');
+    logger.error(`Format de donnée invalide.`);
+    sendError("Format de donnée invalide.");
   }
 
   const results = await UserModel.update(id, user);
-  if (results.affectedRows === 0) {
-    logger.warn(`L'utilisateur est introuvable.`);
+  if (results.affectedRows === 0) { 
+    logger.warn(`On tente de modifier un utilisateur qui n'existe plus.`, 404);
     sendError('Utilisateur introuvable');
   }
 
@@ -102,14 +100,14 @@ const deleteUser = async (req: RequestBody<UserType>, res: Response) => {
   const { id } = req.params;
 
   if (!id) {
-    logger.error(`Id manquant.`);
-    sendError('L\'ID est requis');
+    logger.error(`Requête incomplète.`);
+    sendError("Requête incomplète.");
   }
 
   const results = await UserModel.deleted(id);
   if (results.affectedRows === 0) {
     logger.warn(`Utilisateur introuvable`);
-    sendError("Utilisateur introuvable.");
+    sendError('Utilisateur introuvable.');
   }
 
   logger.info(`Utilisateurs supprimé avec succès`);
