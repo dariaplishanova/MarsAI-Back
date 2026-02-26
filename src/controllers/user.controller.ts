@@ -1,130 +1,102 @@
-import { Request, Response } from 'express';
-import userModel from '../models/user.model.js';
-import { Params, UserType } from '../types/type.js';
+import { Response } from 'express';
+import UserModel from '../models/user.model.js';
+import { Params, RequestBody, RequestEmpty, RequestParams, RequestParamsBody, UserType } from '../types/type.js';
 import bcrypt from 'bcrypt';
+import { sendError } from '../utils.js';
+import logger from '../config/logger.js';
 
-const getAllUsers = async (req: Request, res: Response) => {
-  try {
-    const results = await userModel.findAll();
-    if (results.length > 0) {
-      return res.status(404).json({
-        success: true,
-        data: results,
-        message: 'liste des Utilisateurs trouvée',
-      });
-    }
-    return res.status(201).json({
-      success: false,
-      message: 'Aucun utilisateur dans la base de donnée',
-    });
-  } catch (error) {
-    console.error('Erreur lors de la récupération des utilisateurs : ', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Une erreur interne est survenue sur le serveur.',
-      error,
-    });
-  }
-};
-//--------------------------------------------------------------------------------
+const getAllUsers = async (_req: RequestEmpty, res: Response) => {
+  const results = await UserModel.findAll();
 
-const getOneUser = async (req: Request<Params>, res: Response) => {
-  try {
-    const id = req.params.id;
-    const results = await userModel.findOne(id);
-
-    if (results.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Cet utilisateur est introuvable' });
-    }
-    return res
-      .status(200)
-      .json({ success: true, data: results, message: 'Utilisateur trouvé' });
-  } catch (error) {
-    console.error('Erreur lors de la récupération des utilisateurs : ', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Une erreur interne est survenue sur le serveur.',
-    });
-  }
-};
-//--------------------------------------------------------------------------------
-
-const createUser = async (req: Request, res: Response) => {
-  try {
-    const user: UserType = req.body;
-    user.hashedPassword = bcrypt.hashSync(user.password, 10);
-    const results = await userModel.create(user);
-
-    if (!results) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Erreur inscription Utilisateur' });
-    }
-    return res.status(201).json({
-      id: user.insertId,
-      success: true,
-      data: results,
-      message: 'Utilisateur créer avec succès',
-    });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: 'Erreur SERVEUR', error });
-  }
-};
-//--------------------------------------------------------------------------------
-const updateUser = async (req: Request<Params>, res: Response) => {
-  const id = req.params.id;
-  const user: UserType = req.body;
-  const results = await userModel.update(id, user);
-  try {
-    if (!id || !user) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Données manquantes : l'ID, le nom, le prénom et l'email sont obligatoires.",
-      });
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(user.email)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Format d'email invalide." });
-    }
-    return res.status(201).json({
-      success: true,
-      data: results,
-      message: 'Utilisateur mis à jour avec succès',
-    });
-  } catch (error) {
-    console.error("Erreur lors de la mise à jour de l'utilisateur : ", error);
-    return res
-      .status(500)
-      .json({ success: false, message: 'Erreur SERVEUR', error });
-  }
-};
-//--------------------------------------------------------------------------------
-
-const deleteUser = async (req: Request<Params>, res: Response) => {
-  try {
-    const id = req.params.id;
-    const results = await userModel.deleted(id);
+  if (results.length === 0) {
+    logger.warn('Aucun utilisateur présent dans la base de données');
     return res.status(200).json({
-      success: true,
-      data: results,
-      message: 'User supprimé avec succès',
-    });
-  } catch (error) {
-    console.error("Erreur lors de la suppression de l'utilisateur : ", error);
-    return res.status(500).json({
       success: false,
-      message: 'Une erreur interne est survenue sur le serveur.',
+      data: [],
+      message: 'Aucun utilisateur trouvé',
     });
   }
+
+  logger.info(`${results.length} utilisateurs récupérés avec succès`);
+  return res.status(200).json({
+    success: true,
+    data: results,
+  });
 };
-//--------------------------------------------------------------------------------
+
+const getOneUser = async (req: RequestParams<Params>, res: Response) => {
+  const { id } = req.params;
+  const numericId = Number(id);
+  const user = await UserModel.findOne(numericId);
+
+  if (!user) {
+    return sendError('Cet utilisateur est introuvable.', 404);
+  }
+
+  logger.info(`L'utilisateur ${user.firstname} ${user.lastname} récupéré avec succès`);
+  return res.status(200).json({
+    success: true,
+    data: user,
+  });
+};
+
+const createUser = async (req: RequestBody<UserType>, res: Response) => {
+  const { password, ...userData } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const results = await UserModel.create({ ...userData, password: hashedPassword });
+
+  if (results.affectedRows === 0) {
+    return sendError("Échec inattendu côté serveur lors de l\'insertion.", 500);
+  }
+
+  const userId = results.insertId;
+  logger.info(`Nouvel utilisateur créé avec l'id ${userId}.`);
+
+  return res.status(201).json({
+    success: true,
+    data: { userId, ...results },
+    message: 'Utilisateur créé avec succès',
+  });
+};
+
+const updateUser = async (req: RequestParamsBody<Params, Partial<UserType>>, res: Response) => {
+  const { id } = req.params;
+  const user = req.body;
+
+  const numericId = Number(id);
+
+  const results = await UserModel.update(numericId, user);
+
+  if (results.affectedRows === 0) {
+    return sendError(`L'utilisateur ${id} néxiste pas.`);
+  }
+
+  logger.info(`Utilisateur modifié avec succès`);
+  return res.status(200).json({
+    success: true,
+    data: results,
+    message: 'Utilisateur mis à jour avec succès',
+  });
+};
+
+const deleteUser = async (req: RequestParams<Params>, res: Response) => {
+  const { id } = req.params;
+
+  const numericId = Number(id);
+
+  const results = await UserModel.deleted(numericId);
+
+  if (results.affectedRows === 0) {
+    return sendError('Utilisateur introuvable.');
+  }
+
+  logger.info(`Utilisateurs supprimé avec succès`);
+  return res.status(200).json({
+    success: true,
+    data: results,
+    message: 'User supprimé avec succès',
+  });
+};
 
 export default {
   getAllUsers,

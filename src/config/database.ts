@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+import logger from './logger.js';
 dotenv.config();
 
 interface MySQLError extends Error {
@@ -20,21 +21,21 @@ const pool = mysql.createPool({
 export const testDbConnection = async (): Promise<void> => {
   try {
     const connection = await pool.getConnection(); // On demande une ligne au standard
-    console.log('✅ Connexion au Pool MySQL réussie');
+    logger.info('Connexion au Pool MySQL réussie');
     connection.release(); // On libère la ligne immédiatement
   } catch (error: unknown) {
-    console.error('❌ Impossible de joindre la base de données via le Pool :');
+    logger.error('Impossible de joindre la base de données via le Pool :');
 
     if (error instanceof Error) {
       const mysqlError = error as MySQLError;
       if (mysqlError.code === 'ENOTFOUND') {
-        console.error('Hôte introuvable. Vérifiez DB_HOST dans le .env');
+        logger.error('Hôte introuvable. Vérifiez DB_HOST dans le .env');
       } else if (mysqlError.code === 'ER_ACCESS_DENIED_ERROR') {
-        console.error('Accès refusé. Vérifiez DB_USER et DB_PASSWORD');
+        logger.error('Accès refusé. Vérifiez DB_USER et DB_PASSWORD');
       } else if (mysqlError.code === 'ECONNREFUSED') {
-        console.error('Connexion refusée. Le serveur MySQL est-il lancé ?');
+        logger.error('Connexion refusée. Le serveur MySQL est-il lancé ?');
       } else {
-        console.error(`Erreur : ${mysqlError.message}`);
+        logger.error(`Erreur : ${mysqlError.message}`);
       }
     }
     process.exit(1);

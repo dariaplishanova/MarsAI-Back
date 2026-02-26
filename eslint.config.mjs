@@ -1,13 +1,49 @@
-import js from '@eslint/js';
 import globals from 'globals';
-import { defineConfig } from 'eslint/config';
+import tseslint from 'typescript-eslint';
+import prettierConfig from 'eslint-config-prettier';
 
-export default defineConfig([
+export default tseslint.config(
+  // Ignorer les dossiers de build et dépendances
   {
-    files: ['**/*.{js,mjs,cjs}'],
-    plugins: { js },
-    extends: ['js/recommended'],
-    languageOptions: { globals: globals.browser },
+    ignores: ['node_modules/', 'dist/'],
   },
-  { files: ['**/*.js'], languageOptions: { sourceType: 'commonjs' } },
-]);
+
+  // Configuration pour les fichiers TypeScript
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    extends: [...tseslint.configs.recommended],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+      parser: tseslint.parser,
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    // Ajout des règles professionnelles
+    rules: {
+      // INTERDICTION DU TYPE ANY (Règle d'or)
+      '@typescript-eslint/no-explicit-any': 'error',
+
+      // Autoriser les variables non utilisées commençant par _ (ex: _req, _next)
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+
+      // Forcer l'utilisation de await pour les promesses (évite les bugs async)
+      '@typescript-eslint/await-thenable': 'error',
+
+      // Empêcher les promesses flottantes
+      '@typescript-eslint/no-floating-promises': 'error',
+    },
+  },
+
+  // Désactive les conflits avec Prettier
+  prettierConfig,
+);

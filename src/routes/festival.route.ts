@@ -1,17 +1,20 @@
 import express from 'express';
 import FestivalController from '../controllers/festival.controller.js';
+import { validate } from '../middlewares/validate.middleware.js';
+import { festivalSchema } from '../validation/festival.schema.js';
+import { idParamSchema } from '../validation/idParams.schema.js';
 
 const router = express.Router();
 
-//Route pour récupérer tous les festivals
 router.get('/', FestivalController.getAllFestivals);
-//Route pour récupérer un festival par son id
-router.get('/:id', FestivalController.getFestivalById);
-//Route pour la création d'un nouveau festival
-router.post('/', FestivalController.createFestival);
-//Route pour la mise à jour d'un festival
-router.put('/:id', FestivalController.updateFestival);
-//Route pour la suppression d'un festival
-router.delete('/:id', FestivalController.deleteFestival);
+router.get('/:id', validate(idParamSchema, 'params'), FestivalController.getFestivalById);
+router.post('/', validate(festivalSchema), FestivalController.createFestival);
+router.put(
+  '/:id',
+  validate(idParamSchema, 'params'),
+  validate(festivalSchema.partial()),
+  FestivalController.updateFestival,
+);
+router.delete('/:id', validate(idParamSchema, 'params'), FestivalController.deleteFestival);
 
 export default router;

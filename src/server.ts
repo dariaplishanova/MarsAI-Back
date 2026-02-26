@@ -1,19 +1,23 @@
-import express, { Request, Response } from 'express';
-import UserRoutes from './routes/user.routes.js';
+import express, { Response } from 'express';
 import dotenv from 'dotenv';
-import MovieRouter from './routes/movie.router.js';
 import { testDbConnection } from './config/database.js';
+import { errorMiddleware } from './middlewares/error.middleware.js';
 import FestivalRoutes from './routes/festival.route.js';
 import CollaboratorRoutes from './routes/collaborator.route.js';
 import DirectorRoutes from './routes/director.route.js';
-import authRoute from './routes/auth.route.js';
+import UserRoutes from './routes/user.routes.js';
+import RatingRoutes from './routes/rating.route.js';
+import AuthRoutes from './routes/auth.route.js';
+import MovieRoutes from './routes/movie.router.js';
 import cors from 'cors';
+import logger from './config/logger.js';
+import { RequestEmpty } from './types/type.js';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-app.use(express.json()); // Middleware pour lire le JSON
+app.use(express.json());
 
 const startServer = async () => {
   try {
@@ -21,38 +25,36 @@ const startServer = async () => {
 
     app
       .listen(port, () => {
-        console.log(`🚀 Serveur prêt sur http://localhost:${port}`);
+        logger.info(`Serveur prêt sur http://localhost:${port}`);
       })
       .on('error', (err: Error) => {
-        console.error(
-          '❌ Impossible de lancer le serveur Express:',
-          err.message
-        );
+        logger.error('Impossible de lancer le serveur Express:', err.message);
         process.exit(1);
       });
   } catch (error) {
-    console.error('💥 Erreur fatale lors du démarrage du serveur:', error);
+    logger.error('Erreur fatale lors du démarrage du serveur:', error);
     process.exit(1);
   }
 };
 
-startServer();
+await startServer();
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Serveur MarsAI en mode ESM (EcmaScript Modules) !');
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+  }),
+);
+
+app.get('/', (_req: RequestEmpty, res: Response) => {
+  res.send('Bienvenue sur MarsAI, le festival des futurs souhaitables !');
 });
 
-app.use(cors({
-  origin: "http://localhost:5173"
-}));
-
 app.use('/users', UserRoutes);
-app.use('/movies', MovieRouter);
-app.use("/festivals", FestivalRoutes);
-app.use("/collaborators", CollaboratorRoutes);
-app.use("/directors", DirectorRoutes)
-
+app.use('/movies', MovieRoutes);
 app.use('/festivals', FestivalRoutes);
 app.use('/collaborators', CollaboratorRoutes);
 app.use('/directors', DirectorRoutes);
-app.use('/auth', authRoute);
+app.use('/rating', RatingRoutes);
+app.use('/auth', AuthRoutes);
+
+app.use(errorMiddleware);

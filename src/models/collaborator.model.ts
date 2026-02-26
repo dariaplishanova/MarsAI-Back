@@ -13,6 +13,7 @@ const findOne = async (id: number) => {
   const [result] = await db.execute(query, [id]);
   return result as CollaboratorType[];
 };
+
 //--------------------------------------------------------------------------------
 
 const create = async (collaborator: CollaboratorType) => {
