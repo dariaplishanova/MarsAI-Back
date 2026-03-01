@@ -1,25 +1,26 @@
-import { LoginType, UserType } from '../types/type.js';
+import { UserType } from '../types/type.js';
 import db from '../config/database.js';
+import { ResultSetHeader } from 'mysql2';
 
-const create = async (user: UserType) => {
-  const query =
-    'INSERT INTO user (firstname, lastname, email, password, created_at,updated_at, festival_id) VALUES (?, ?, ?, ?, NOW(), NOW(), ?)';
-  const [result] = await db.execute(query, [
+const create = async (user: UserType): Promise<ResultSetHeader> => {
+  // Les colonnes created_at et updated_at sont retirées car la DB les remplit seule
+  const query = `
+    INSERT INTO user (firstname, lastname, email, password, role, festival_id) 
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+
+  const [result] = await db.execute<ResultSetHeader>(query, [
     user.firstname,
     user.lastname,
     user.email,
-    user.hashedPassword,
-    user.festival_id,
+    user.password ?? '',
+    user.role ?? 'user',
+    user.festival_id ?? 1,
   ]);
-  return result as UserType[];
+
+  return result;
 };
 
-export const findByEmail = async (email: string) => {
-  const query = 'SELECT * FROM user WHERE email = ?';
-  const [result] = await db.execute(query, [email]);
-  return result as LoginType[];
-};
 export default {
-  findByEmail,
   create,
 };

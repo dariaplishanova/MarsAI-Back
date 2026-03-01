@@ -1,5 +1,7 @@
-import express, { Response } from 'express';
 import dotenv from 'dotenv';
+dotenv.config();
+
+import express, { Response } from 'express';
 import { testDbConnection } from './config/database.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
 import FestivalRoutes from './routes/festival.route.js';
@@ -12,8 +14,6 @@ import MovieRoutes from './routes/movie.router.js';
 import cors from 'cors';
 import logger from './config/logger.js';
 import { RequestEmpty } from './types/type.js';
-
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
