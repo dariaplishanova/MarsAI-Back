@@ -3,9 +3,18 @@ import db from '../config/database.js';
 import { MovieRow, MovieType } from '../types/type.js';
 import { insertEntity, updateEntity } from '../utils.js';
 
-const findAll = async (): Promise<MovieType[]> => {
-  const [result] = await db.execute<MovieRow[]>('SELECT * FROM movie');
-  return result;
+const findAll = async (): Promise<MovieRow[]> => {
+  const query = `
+    SELECT 
+      m.*, 
+      u.firstname AS director_firstname, 
+      u.lastname AS director_lastname
+    FROM movie m
+    JOIN user u ON m.director_id = u.id
+    WHERE m.status = 'approved'
+  `;
+  const [rows] = await db.execute<MovieRow[]>(query);
+  return rows;
 };
 
 const findById = async (id: number): Promise<MovieType | null> => {

@@ -8,7 +8,6 @@ const router = express.Router();
 
 router.get('/', UserController.getAllUsers);
 router.get('/:id', validate(idParamSchema, 'params'), UserController.getOneUser);
-router.post('/', validate(userSchema), UserController.createUser);
 router.put('/:id', validate(idParamSchema, 'params'), validate(userSchema.partial()), UserController.updateUser);
 router.delete('/:id', validate(idParamSchema, 'params'), UserController.deleteUser);
 

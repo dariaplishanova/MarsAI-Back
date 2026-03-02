@@ -1,7 +1,6 @@
 import { Response } from 'express';
 import UserModel from '../models/user.model.js';
-import { Params, RequestBody, RequestEmpty, RequestParams, RequestParamsBody, UserType } from '../types/type.js';
-import bcrypt from 'bcrypt';
+import { Params, RequestEmpty, RequestParams, RequestParamsBody, UserType } from '../types/type.js';
 import { sendError } from '../utils.js';
 import logger from '../config/logger.js';
 
@@ -27,7 +26,7 @@ const getAllUsers = async (_req: RequestEmpty, res: Response) => {
 const getOneUser = async (req: RequestParams<Params>, res: Response) => {
   const { id } = req.params;
   const numericId = Number(id);
-  const user = await UserModel.findOne(numericId);
+  const user = await UserModel.findById(numericId);
 
   if (!user) {
     return sendError('Cet utilisateur est introuvable.', 404);
@@ -37,25 +36,6 @@ const getOneUser = async (req: RequestParams<Params>, res: Response) => {
   return res.status(200).json({
     success: true,
     data: user,
-  });
-};
-
-const createUser = async (req: RequestBody<UserType>, res: Response) => {
-  const { password, ...userData } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const results = await UserModel.create({ ...userData, password: hashedPassword });
-
-  if (results.affectedRows === 0) {
-    return sendError("Échec inattendu côté serveur lors de l\'insertion.", 500);
-  }
-
-  const userId = results.insertId;
-  logger.info(`Nouvel utilisateur créé avec l'id ${userId}.`);
-
-  return res.status(201).json({
-    success: true,
-    data: { userId, ...results },
-    message: 'Utilisateur créé avec succès',
   });
 };
 
@@ -101,7 +81,6 @@ const deleteUser = async (req: RequestParams<Params>, res: Response) => {
 export default {
   getAllUsers,
   getOneUser,
-  createUser,
   updateUser,
   deleteUser,
 };

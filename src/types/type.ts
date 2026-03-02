@@ -2,6 +2,12 @@ import { RowDataPacket } from 'mysql2/promise';
 import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 
+/**
+ *        MOVIE
+ */
+
+export type AITool = 'Image' | 'Sound' | 'Video' | 'Voice' | 'Script';
+
 export interface MovieType {
   id?: number;
   title: string;
@@ -19,7 +25,17 @@ export interface MovieType {
   status: 'pending' | 'approved' | 'rejected';
   director_id: number;
   created_at: Date | string;
+  ai_tools?: AITool[];
 }
+
+export interface MovieWithDirector extends MovieType {
+  director_firstname: string;
+  director_lastname: string;
+}
+
+/**
+ *        FESTIVAL
+ */
 
 export interface FestivalType {
   id: number;
@@ -32,28 +48,22 @@ export interface FestivalType {
   booking_total: number;
 }
 
-export interface UserType {
-  id: number;
-  firstname: string;
-  lastname: string;
-  email: string;
-  password: string;
-  hashedPassword: string;
-  created_at: string;
-  updated_at: string;
-  festival_id: number;
-  insertId: number;
-}
+/**
+ *          USER
+ */
 
-export interface CollaboratorType {
-  id: number;
+export type UserRole = 'user' | 'jury' | 'admin' | 'super-admin';
+
+export interface UserType {
+  id?: number;
   firstname: string;
   lastname: string;
-  gender: string;
-  job: string;
   email: string;
-  role: string;
-  movie_id: number;
+  password?: string;
+  role: UserRole;
+  created_at?: string;
+  updated_at?: string;
+  festival_id: number;
 }
 
 export interface DirectorType {
@@ -85,6 +95,17 @@ export interface DirectorType {
   newsletter: boolean;
   created_at?: Date;
   updated_at?: Date;
+}
+
+export interface CollaboratorType {
+  id: number;
+  firstname: string;
+  lastname: string;
+  gender: string;
+  job: string;
+  email: string;
+  role: string;
+  movie_id: number;
 }
 
 export interface EventType {
@@ -136,12 +157,20 @@ export interface RatingType {
   created_at?: Date | string;
 }
 
-export interface LoginType {
-  id: number;
-  email: string;
-  password: string;
-  hashedPassword: string;
-}
+export interface UserRow extends RowDataPacket, UserType {}
+export interface MovieRow extends RowDataPacket, MovieType {}
+export interface FestivalRow extends RowDataPacket, FestivalType {}
+export interface DirectorRow extends RowDataPacket, DirectorType {}
+export interface RatingRow extends RowDataPacket, RatingType {}
+
+export type RequestBody<T> = Request<ParamsDictionary, object, T, object>;
+export type RequestParams<P extends ParamsDictionary> = Request<P, object, object, object>;
+export type RequestParamsBody<P extends ParamsDictionary, T> = Request<P, object, T, object>;
+export type RequestEmpty = Request<Record<string, never>, Record<string, never>, Record<string, never>>;
+
+/**
+ *      ERROR
+ */
 
 export interface AppError extends Error {
   status?: number;
@@ -152,13 +181,27 @@ export interface Params extends ParamsDictionary {
   id: string;
 }
 
-export type RequestBody<T> = Request<ParamsDictionary, object, T, object>;
-export type RequestParams<P extends ParamsDictionary> = Request<P, object, object, object>;
-export type RequestParamsBody<P extends ParamsDictionary, T> = Request<P, object, T, object>;
-export type RequestEmpty = Request<Record<string, never>, Record<string, never>, Record<string, never>>;
+/**
+ *      LOGIN
+ */
 
-export interface UserRow extends RowDataPacket, UserType {}
-export interface MovieRow extends RowDataPacket, MovieType {}
-export interface FestivalRow extends RowDataPacket, FestivalType {}
-export interface DirectorRow extends RowDataPacket, DirectorType {}
-export interface RatingRow extends RowDataPacket, RatingType {}
+export interface LoginType {
+  id: number;
+  email: string;
+  password: string;
+  hashedPassword: string;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface AuthenticatedRequest extends Request {
+  user?: {
+    userId: number;
+    email?: string;
+    role?: string;
+    // Ajoute ici les propriétés que tu as mises dans ton JWT lors du login
+  };
+}

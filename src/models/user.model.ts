@@ -8,24 +8,16 @@ const findAll = async (): Promise<UserRow[]> => {
   return rows;
 };
 
-const findOne = async (id: number): Promise<UserRow | null> => {
+const findById = async (id: number): Promise<UserRow | null> => {
   const query = 'SELECT * FROM user WHERE id = ?';
   const [result] = await db.execute<UserRow[]>(query, [id]);
   return result.length > 0 ? result[0] : null;
 };
 
-const create = async (user: UserType): Promise<ResultSetHeader> => {
-  const query = `INSERT INTO user (firstname, lastname, email, password, created_at,updated_at, festival_id) 
-                 VALUES (?, ?, ?, ?, NOW(), NOW(), ?)`;
-
-  const [result] = await db.execute<ResultSetHeader>(query, [
-    user.firstname,
-    user.lastname,
-    user.email,
-    user.password,
-    user.festival_id,
-  ]);
-  return result;
+const findByEmail = async (email: string): Promise<UserType | null> => {
+  const query = 'SELECT * FROM user WHERE email = ?';
+  const [result] = await db.execute<UserRow[]>(query, [email]);
+  return result.length > 0 ? result[0] : null;
 };
 
 const update = async (id: number, data: Partial<UserType>): Promise<ResultSetHeader> => {
@@ -52,8 +44,8 @@ const deleted = async (id: number): Promise<ResultSetHeader> => {
 
 export default {
   findAll,
-  findOne,
-  create,
+  findById,
+  findByEmail,
   update,
   deleted,
 };

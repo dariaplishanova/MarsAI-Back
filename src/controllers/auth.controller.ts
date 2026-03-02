@@ -1,61 +1,91 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import AuthModel from '../models/auth.model.js';
-import { Params, UserType } from '../types/type.js';
+import { AuthenticatedRequest, LoginCredentials, RequestBody, UserType } from '../types/type.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { sendError } from '../utils.js';
+import logger from '../config/logger.js';
+import userModel from '../models/user.model.js';
 
-const login = async (req: Request<Params>, res: Response) => {
-  try {
-    const { email, password } = req.body;
-    const users = await AuthModel.findByEmail(email);
+export const login = async (req: RequestBody<LoginCredentials>, res: Response) => {
+  const { email, password } = req.body;
 
-    if (users.length === 0) {
-      return res.status(404).json({ success: false, message: 'Cet utilisateur est introuvable' });
-    }
-    const user = users[0];
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).send('Identifiants invalides');
-    }
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, {
-      expiresIn: '1h',
-    });
-    return res.status(200).json({
-      success: true,
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-      },
-      message: 'Connexion effectuée avec succès !',
-    });
-  } catch (error) {
-    console.error('Erreur lors de la récupération des utilisateurs : ', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Une erreur interne est survenue sur le serveur.',
-    });
+  const user = await userModel.findByEmail(email);
+  if (!user) {
+    return sendError('Identifiants invalides', 401);
   }
+
+  const isMatch = await bcrypt.compare(password, user.password!);
+  if (!isMatch) {
+    return sendError('Identifiants invalides', 401);
+  }
+
+  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, { expiresIn: '2h' });
+
+  res.status(200).json({
+    success: true,
+    token,
+    user: {
+      id: user.id,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      role: user.role,
+    },
+  });
 };
-const register = async (req: Request, res: Response) => {
-  try {
-    const user: UserType = req.body;
-    user.hashedPassword = bcrypt.hashSync(user.password, 10);
-    const results = await AuthModel.create(user);
 
-    if (!results) {
-      return res.status(400).json({ success: false, message: 'Erreur inscription Utilisateur' });
-    }
-    return res.status(201).json({
-      success: true,
-      message: 'Utilisateur créer avec succès',
-    });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: 'Erreur SERVEUR', error });
+const register = async (req: RequestBody<UserType>, res: Response) => {
+  const { password, ...userData } = req.body;
+  const hashedPassword = await bcrypt.hash(password!, 10);
+  const results = await AuthModel.create({ ...userData, password: hashedPassword, role: 'user' });
+
+  if (results.affectedRows === 0) {
+    return sendError("Échec inattendu côté serveur lors de l\'insertion.", 500);
   }
+
+  const userId = results.insertId;
+  logger.info(`Nouvel utilisateur créé avec l'id ${userId}.`);
+
+  return res.status(201).json({
+    success: true,
+    data: { userId, ...results },
+    message: 'Utilisateur créé avec succès',
+  });
+};
+
+export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
+  // 1. Extraction de l'ID depuis le middleware verifyToken
+  const userId = req.user?.userId;
+
+  if (!userId) {
+    // Utilisation de ta fonction utilitaire
+    return sendError('Utilisateur non identifié', 401);
+  }
+
+  // 2. Récupération en base de données
+  // Si la DB est offline, Express 5 attrape l'erreur automatiquement
+  const user = await userModel.findById(userId);
+
+  if (!user) {
+    return sendError('Profil introuvable', 404);
+  }
+
+  // 3. Réponse de succès unique
+  res.status(200).json({
+    success: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      role: user.role,
+    },
+  });
 };
 
 export default {
   login,
   register,
+  getProfile,
 };

@@ -8,8 +8,9 @@
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
+    "noEmit": true,
     "types": ["node"]
   },
-  "include": ["src/**/*"],
+  "include": ["src", "vite.config.js", "eslint.config.js", "**/*.d.ts"],
   "exclude": ["node_modules"]
 }
