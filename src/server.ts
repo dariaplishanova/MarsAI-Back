@@ -14,6 +14,7 @@ import MovieRoutes from './routes/movie.router.js';
 import cors from 'cors';
 import logger from './config/logger.js';
 import { RequestEmpty } from './types/type.js';
+import submissionRoutes from './routes/submission.routes.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -56,5 +57,6 @@ app.use('/collaborators', CollaboratorRoutes);
 app.use('/directors', DirectorRoutes);
 app.use('/rating', RatingRoutes);
 app.use('/auth', AuthRoutes);
+app.use('/submissions', submissionRoutes);
 
 app.use(errorMiddleware);

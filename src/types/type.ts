@@ -24,7 +24,7 @@ export interface MovieType {
   ia_type: '100% IA' | 'Hybride';
   status: 'pending' | 'approved' | 'rejected';
   director_id: number;
-  created_at: Date | string;
+  created_at?: Date | string;
   ai_tools?: AITool[];
 }
 
@@ -84,21 +84,14 @@ export interface DirectorType {
   linkedin_url: string;
   facebook_url: string;
   twitter_url: string;
-  question_about:
-    | 'Réseaux sociaux'
-    | 'Moteur de recherche'
-    | 'Bouche-à-oreille'
-    | 'Presse / Média'
-    | 'Autre festival'
-    | 'Partenaire'
-    | 'Autre';
+  question_about: string;
   newsletter: boolean;
   created_at?: Date;
   updated_at?: Date;
 }
 
 export interface CollaboratorType {
-  id: number;
+  id?: number;
   firstname: string;
   lastname: string;
   gender: string;
