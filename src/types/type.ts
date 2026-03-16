@@ -6,8 +6,6 @@ import { ParamsDictionary } from 'express-serve-static-core';
  *        MOVIE
  */
 
-export type AITool = 'Image' | 'Sound' | 'Video' | 'Voice' | 'Script';
-
 export interface MovieType {
   id?: number;
   title: string;
@@ -15,17 +13,16 @@ export interface MovieType {
   synopsis_fr: string;
   synopsis_en: string;
   duration: number;
-  main_language: string;
-  yt_url: string;
+  language: string;
+  video_url: string;
   thumbnail: string;
   subtitles: string;
   stack: string;
   methodology: string;
   ia_type: '100% IA' | 'Hybride';
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending'| 'in_review'| 'approved'| 'official_selection'| 'rejected';
   director_id: number;
   created_at?: Date | string;
-  ai_tools?: AITool[];
 }
 
 export interface MovieWithDirector extends MovieType {
@@ -34,25 +31,10 @@ export interface MovieWithDirector extends MovieType {
 }
 
 /**
- *        FESTIVAL
- */
-
-export interface FestivalType {
-  id: number;
-  name: string;
-  description: string;
-  created_at: Date;
-  start_at: Date;
-  end_at: Date;
-  status: 'Actif' | 'Inactif';
-  booking_total: number;
-}
-
-/**
  *          USER
  */
 
-export type UserRole = 'user' | 'jury' | 'admin' | 'super-admin';
+export type UserRole = 'user' | 'jury' | 'admin' ;
 
 export interface UserType {
   id?: number;
@@ -63,14 +45,13 @@ export interface UserType {
   role: UserRole;
   created_at?: string;
   updated_at?: string;
-  festival_id: number;
 }
 
 export interface DirectorType {
   id?: number;
   firstname: string;
   lastname: string;
-  gender: 'M.' | 'Mme';
+  gender: string;
   birthday: string;
   email: string;
   mobile: string;
@@ -124,9 +105,9 @@ export interface ParticipantType {
 }
 
 export interface ImageType {
-  id: number;
+  id?: number;
   url: string;
-  created_at: Date;
+  movie_id: number;
 }
 
 export interface RoleType {
@@ -152,7 +133,6 @@ export interface RatingType {
 
 export interface UserRow extends RowDataPacket, UserType {}
 export interface MovieRow extends RowDataPacket, MovieType {}
-export interface FestivalRow extends RowDataPacket, FestivalType {}
 export interface DirectorRow extends RowDataPacket, DirectorType {}
 export interface RatingRow extends RowDataPacket, RatingType {}
 

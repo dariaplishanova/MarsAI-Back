@@ -2,6 +2,7 @@ import { ResultSetHeader } from 'mysql2';
 import db from '../config/database.js';
 import { DirectorRow, DirectorType } from '../types/type.js';
 import { insertEntity } from '../utils.js';
+import { Pool, PoolConnection } from 'mysql2/promise';
 
 const findAll = async (): Promise<DirectorType[]> => {
   const query = 'SELECT * FROM director';
@@ -15,7 +16,7 @@ const findById = async (id: number): Promise<DirectorType | null> => {
   return result.length > 0 ? result[0] : null;
 };
 
-const create = async (director: DirectorType): Promise<ResultSetHeader> => {
+const create = async (director: DirectorType, connection: Pool | PoolConnection = db): Promise<ResultSetHeader> => {
   const columns: (keyof DirectorType)[] = [
     'firstname',
     'lastname',
@@ -37,7 +38,7 @@ const create = async (director: DirectorType): Promise<ResultSetHeader> => {
     'newsletter',
   ];
 
-  return insertEntity('director', director, columns, db);
+  return insertEntity('director', director, columns, connection);
 };
 
 export default {

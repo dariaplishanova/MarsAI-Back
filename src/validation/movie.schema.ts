@@ -6,8 +6,8 @@ export const movieSchema = z.object({
   synopsis_fr: z.string().trim().min(10, 'Synopsis trop court'),
   synopsis_en: z.string().trim().min(10, 'Synopsis too short'),
   duration: z.coerce.number().int().min(1, 'Durée invalide'),
-  main_language: z.string().trim().min(2, 'Langue requise'),
-  yt_url: z.url('URL YouTube invalide').or(z.literal('')),
+  language: z.string().trim().min(2, 'Langue requise'),
+  video_url: z.url('URL invalide').or(z.literal('')),
   thumbnail: z.url('Lien image invalide').or(z.literal('')),
   subtitles: z.string().trim().default('none'),
   stack: z.string().trim().default(''),
@@ -15,5 +15,4 @@ export const movieSchema = z.object({
   ia_type: z.enum(['100% IA', 'Hybride'], { message: 'Type IA invalide' }),
   status: z.enum(['pending', 'approved', 'rejected']).default('pending'),
   director_id: z.coerce.number().int().positive('ID réalisateur requis'),
-  ai_tools: z.array(z.string()).default([]),
 });

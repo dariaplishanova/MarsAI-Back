@@ -22,14 +22,13 @@ const findByEmail = async (email: string): Promise<UserType | null> => {
 
 const update = async (id: number, data: Partial<UserType>): Promise<ResultSetHeader> => {
   const query =
-    'UPDATE user SET firstname = ?, lastname = ?, email = ?, password = ?, updated_at = NOW(), festival_id = ? WHERE id = ?';
+    'UPDATE user SET firstname = ?, lastname = ?, email = ?, password = ?, updated_at = NOW() WHERE id = ?';
 
   const [result] = await db.execute<ResultSetHeader>(query, [
     data.firstname || null,
     data.lastname || null,
     data.email || null,
     data.password || null,
-    data.festival_id || null,
     id,
   ]);
 

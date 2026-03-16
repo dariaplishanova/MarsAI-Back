@@ -1,5 +1,7 @@
 import db from '../config/database.js';
 import { CollaboratorType } from '../types/type.js';
+import { Pool, PoolConnection, ResultSetHeader } from 'mysql2/promise';
+import { insertEntity } from '../utils.js';
 
 const findAll = async () => {
   const query = 'SELECT * FROM collaborator';
@@ -16,18 +18,12 @@ const findOne = async (id: number) => {
 
 //--------------------------------------------------------------------------------
 
-const create = async (collaborator: CollaboratorType) => {
-  const query =
-    'INSERT INTO collaborator (firstname, lastname, gender, email, job, movie_id) VALUES (?, ?, ?, ?, ?, ?)';
-  const [result] = await db.execute(query, [
-    collaborator.firstname,
-    collaborator.lastname,
-    collaborator.gender,
-    collaborator.email,
-    collaborator.job,
-    collaborator.movie_id,
-  ]);
-  return result as CollaboratorType[];
+const create = async (
+  collaborator: CollaboratorType,
+  connection: Pool | PoolConnection = db,
+): Promise<ResultSetHeader> => {
+  const columns: (keyof CollaboratorType)[] = ['firstname', 'lastname', 'gender', 'email', 'job', 'movie_id'];
+  return insertEntity('collaborator', collaborator, columns, connection);
 };
 //--------------------------------------------------------------------------------
 

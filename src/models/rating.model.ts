@@ -14,7 +14,11 @@ const createRating = async (rating: RatingType): Promise<ResultSetHeader> => {
     'score_total',
   ];
 
-  return insertEntity('rating', rating, columns, db);
+  const result = await insertEntity('rating', rating, columns, db);
+
+  await db.execute( `UPDATE movie SET status = 'approved' where id = ?`, [rating.movie_id])
+
+  return result
 };
 
 export default {

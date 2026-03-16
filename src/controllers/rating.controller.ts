@@ -5,18 +5,19 @@ import { RatingType, RequestBody } from '../types/type.js';
 import { sendError } from '../utils.js';
 
 const createRating = async (req: RequestBody<RatingType>, res: Response) => {
-  const results = await RatingModel.createRating(req.body);
+  const ratingData = req.body;
+
+  const results = await RatingModel.createRating(ratingData);
 
   if (results.affectedRows === 0) {
-    return sendError("Échec inattendu côté serveur lors de l\'insertion.", 500);
+    return sendError("Échec inattendu côté serveur lors de l'insertion.", 500);
   }
 
-  const userId = results.insertId;
-  logger.info(`L'évaluation à été créée avec l'id ${userId}.`);
+  logger.info(`L'évaluation a été créée pour le film ${ratingData.movie_id} par le jury ${ratingData.user_id}.`);
 
   return res.status(201).json({
     success: true,
-    data: { userId, ...results },
+    data: ratingData,
     message: 'Evaluation enregistrée avec succès',
   });
 };

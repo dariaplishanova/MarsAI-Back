@@ -5,7 +5,7 @@ import { ResultSetHeader } from 'mysql2';
 const create = async (user: UserType): Promise<ResultSetHeader> => {
   // Les colonnes created_at et updated_at sont retirées car la DB les remplit seule
   const query = `
-    INSERT INTO user (firstname, lastname, email, password, role, festival_id) 
+    INSERT INTO user (firstname, lastname, email, password, role) 
     VALUES (?, ?, ?, ?, ?, ?)
   `;
 
@@ -15,7 +15,6 @@ const create = async (user: UserType): Promise<ResultSetHeader> => {
     user.email,
     user.password ?? '',
     user.role ?? 'user',
-    user.festival_id ?? 1,
   ]);
 
   return result;

@@ -4,7 +4,6 @@ dotenv.config();
 import express, { Response } from 'express';
 import { testDbConnection } from './config/database.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
-import FestivalRoutes from './routes/festival.route.js';
 import CollaboratorRoutes from './routes/collaborator.route.js';
 import DirectorRoutes from './routes/director.route.js';
 import UserRoutes from './routes/user.routes.js';
@@ -52,7 +51,6 @@ app.get('/', (_req: RequestEmpty, res: Response) => {
 
 app.use('/users', UserRoutes);
 app.use('/movies', MovieRoutes);
-app.use('/festivals', FestivalRoutes);
 app.use('/collaborators', CollaboratorRoutes);
 app.use('/directors', DirectorRoutes);
 app.use('/rating', RatingRoutes);

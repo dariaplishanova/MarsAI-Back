@@ -24,6 +24,26 @@ const getAllMovies = async (_req: RequestEmpty, res: Response) => {
   });
 };
 
+const getAllMoviesForJury = async (_req: RequestEmpty, res: Response) => {
+  const results = await Movie.findAllForJury();
+
+  if (results.length === 0) {
+    logger.warn(`Aucune vidéo n'a été trouvé.`);
+    return res.status(200).json({
+      success: true,
+      data: [],
+      message: "Aucune vidéo n'a été trouvé",
+    });
+  }
+
+  logger.info(`${results.length} vidéo${s(results.length)} ont été trouvées pour le jury`);
+  res.status(200).json({
+    success: true,
+    data: results,
+    message: `${results.length} vidéo${s(results.length)} ont été trouvées pour le jury`,
+  });
+};
+
 const getMovieById = async (req: RequestParams<Params>, res: Response) => {
   const { id } = req.params;
   const numericId = Number(id);
@@ -84,6 +104,7 @@ const update = async (req: RequestParamsBody<Params, Partial<MovieType>>, res: R
 
 export default {
   getAllMovies,
+  getAllMoviesForJury,
   getMovieById,
   create,
   update,
