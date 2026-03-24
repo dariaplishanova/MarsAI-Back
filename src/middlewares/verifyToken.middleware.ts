@@ -25,3 +25,4 @@ export const verifyToken = (req: AuthenticatedRequest, _res: Response, next: Nex
     return sendError(`Session invalide ou expirée`, 403);
   }
 };
+

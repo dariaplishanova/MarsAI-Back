@@ -20,7 +20,7 @@ export const login = async (req: RequestBody<LoginCredentials>, res: Response) =
     return sendError('Identifiants invalides', 401);
   }
 
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as string, { expiresIn: '2h' });
+  const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET as string, { expiresIn: '2h' });
 
   res.status(200).json({
     success: true,
