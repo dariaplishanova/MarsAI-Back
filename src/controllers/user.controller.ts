@@ -1,80 +1,60 @@
 import { Response } from 'express';
-import UserModel from '../models/user.model.js';
+import * as UserService from '../services/user.service.js';
 import { Params, RequestEmpty, RequestParams, RequestParamsBody, UserType } from '../types/type.js';
-import { sendError } from '../utils.js';
 import logger from '../config/logger.js';
 
-const getAllUsers = async (_req: RequestEmpty, res: Response) => {
-  const results = await UserModel.findAll();
+export const getAllUsers = async (_req: RequestEmpty, res: Response) => {
+  const results = await UserService.getAllUsers();
 
   if (results.length === 0) {
-    logger.warn('Aucun utilisateur présent dans la base de données');
-    return res.status(200).json({
-      success: false,
-      data: [],
-      message: 'Aucun utilisateur trouvé',
-    });
+    logger.warn('No users present in the database.');
+  } else {
+    logger.info(`${results.length} user(s) retrieved successfully.`);
   }
 
-  logger.info(`${results.length} utilisateurs récupérés avec succès`);
-  return res.status(200).json({
+  return res.json({
     success: true,
     data: results,
+    message: results.length === 0 ? 'No users found' : 'Users retrieved successfully',
   });
 };
 
-const getOneUser = async (req: RequestParams<Params>, res: Response) => {
+export const getOneUser = async (req: RequestParams<Params>, res: Response) => {
   const { id } = req.params;
-  const numericId = Number(id);
-  const user = await UserModel.findById(numericId);
+  const user = await UserService.getUserById(Number(id));
 
-  if (!user) {
-    return sendError('Cet utilisateur est introuvable.', 404);
-  }
-
-  logger.info(`L'utilisateur ${user.firstname} ${user.lastname} récupéré avec succès`);
-  return res.status(200).json({
+  logger.info(`User: "${user.firstname} ${user.lastname}" retrieved successfully.`);
+  return res.json({
     success: true,
     data: user,
   });
 };
 
-const updateUser = async (req: RequestParamsBody<Params, Partial<UserType>>, res: Response) => {
+export const updateUser = async (req: RequestParamsBody<Params, Partial<UserType>>, res: Response) => {
   const { id } = req.params;
-  const user = req.body;
+  logger.info(`[User Controller]: Received update request for User ID ${id}`);
 
-  const numericId = Number(id);
+  const results = await UserService.updateUser(Number(id), req.body);
 
-  const results = await UserModel.update(numericId, user);
-
-  if (results.affectedRows === 0) {
-    return sendError(`L'utilisateur ${id} néxiste pas.`);
-  }
-
-  logger.info(`Utilisateur modifié avec succès`);
-  return res.status(200).json({
+  logger.info(`User ID ${id} modified successfully.`);
+  return res.json({
     success: true,
     data: results,
-    message: 'Utilisateur mis à jour avec succès',
+    message: 'User updated successfully',
   });
 };
 
-const deleteUser = async (req: RequestParams<Params>, res: Response) => {
+export const deleteUser = async (req: RequestParams<Params>, res: Response) => {
   const { id } = req.params;
+  logger.info(`[User Controller]: Received delete request for User ID ${id}`);
 
-  const numericId = Number(id);
+  const results = await UserService.deleteUser(Number(id));
 
-  const results = await UserModel.deleted(numericId);
-
-  if (results.affectedRows === 0) {
-    return sendError('Utilisateur introuvable.');
-  }
-
-  logger.info(`Utilisateurs supprimé avec succès`);
-  return res.status(200).json({
+  logger.info(`User ID ${id} deleted successfully.`);
+  return res.json({
     success: true,
     data: results,
-    message: 'User supprimé avec succès',
+    message: 'User deleted successfully',
   });
 };
 

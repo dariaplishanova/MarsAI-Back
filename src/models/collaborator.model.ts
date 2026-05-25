@@ -1,59 +1,63 @@
-import db from '../config/database.js';
-import { CollaboratorType } from '../types/type.js';
 import { Pool, PoolConnection, ResultSetHeader } from 'mysql2/promise';
-import { insertEntity } from '../utils.js';
+import db from '../config/database.js';
+import { CollaboratorRow, CollaboratorType } from '../types/type.js';
 
-const findAll = async () => {
-  const query = 'SELECT * FROM collaborator';
-  const [result] = await db.execute(query);
-  return result as CollaboratorType[];
-};
-//--------------------------------------------------------------------------------
+type DBContext = Pool | PoolConnection;
 
-const findOne = async (id: number) => {
-  const query = 'SELECT * FROM collaborator WHERE id = ?';
-  const [result] = await db.execute(query, [id]);
-  return result as CollaboratorType[];
+const findAll = async (): Promise<CollaboratorType[]> => {
+  const query = `SELECT * FROM collaborator`;
+  const [rows] = await db.execute<CollaboratorRow[]>(query);
+  return rows;
 };
 
-//--------------------------------------------------------------------------------
-
-const create = async (
-  collaborator: CollaboratorType,
-  connection: Pool | PoolConnection = db,
-): Promise<ResultSetHeader> => {
-  const columns: (keyof CollaboratorType)[] = ['firstname', 'lastname', 'gender', 'email', 'job', 'movie_id'];
-  return insertEntity('collaborator', collaborator, columns, connection);
+const findById = async (id: number): Promise<CollaboratorType | null> => {
+  const query = `SELECT * FROM collaborator WHERE id = ?`;
+  const [rows] = await db.execute<CollaboratorRow[]>(query, [id]);
+  return rows.length > 0 ? rows[0] : null;
 };
-//--------------------------------------------------------------------------------
 
-const update = async (id: number, data: CollaboratorType) => {
-  const query =
-    'UPDATE collaborator SET firstname = ?, lastname = ?, gender = ?, email = ?, job = ?, movie_id = ? WHERE id = ?';
-  const [result] = await db.execute(query, [
+const create = async (collaborator: CollaboratorType, ctx: DBContext = db): Promise<ResultSetHeader> => {
+  const query = `
+    INSERT INTO collaborator (firstname, lastname, email, job, movie_id)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  const [result] = await ctx.execute<ResultSetHeader>(query, [
+    collaborator.firstname,
+    collaborator.lastname,
+    collaborator.email,
+    collaborator.job,
+    collaborator.movie_id,
+  ]);
+  return result;
+};
+
+const update = async (id: number, data: CollaboratorType): Promise<ResultSetHeader> => {
+  const query = `
+    UPDATE collaborator 
+    SET firstname = ?, lastname = ?, email = ?, job = ?, movie_id = ? 
+    WHERE id = ?
+  `;
+  const [result] = await db.execute<ResultSetHeader>(query, [
     data.firstname,
     data.lastname,
-    data.gender,
     data.email,
     data.job,
     data.movie_id,
     id,
   ]);
-  return result as CollaboratorType[];
+  return result;
 };
-//--------------------------------------------------------------------------------
 
-const deleted = async (id: number) => {
+const deleteById = async (id: number): Promise<ResultSetHeader> => {
   const query = `DELETE FROM collaborator WHERE id = ?`;
-  const [result] = await db.execute(query, [id]);
-  return result as CollaboratorType[];
+  const [result] = await db.execute<ResultSetHeader>(query, [id]);
+  return result;
 };
-//--------------------------------------------------------------------------------
 
 export default {
   findAll,
-  findOne,
+  findById,
   create,
   update,
-  deleted,
+  deleteById,
 };

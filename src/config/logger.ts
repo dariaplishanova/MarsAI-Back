@@ -21,9 +21,13 @@ if (process.env.NODE_ENV !== 'production') {
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
-        winston.format.printf(({ timestamp, level, message }) => {
+        winston.format.printf(({ timestamp, level, message, stack, ...meta }) => {
+          if (stack) {
+            return `[${timestamp}] ${level}: ${message}\n${stack}`;
+          }
           // C'est ici que l'on définit l'ordre d'affichage pour la console
-          return `[${timestamp}] ${level}: ${message}`;
+          const metaString = Object.keys(meta).length ? JSON.stringify(meta) : '';
+          return `[${timestamp}] ${level}: ${message} ${metaString}`;
         }),
       ),
     }),

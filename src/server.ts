@@ -1,15 +1,14 @@
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 
 import express, { Response } from 'express';
 import { testDbConnection } from './config/database.js';
 import { errorMiddleware } from './middlewares/error.middleware.js';
-import CollaboratorRoutes from './routes/collaborator.route.js';
-import DirectorRoutes from './routes/director.route.js';
+import CollaboratorRoutes from './routes/collaborator.routes.js';
+import DirectorRoutes from './routes/director.routes.js';
 import UserRoutes from './routes/user.routes.js';
-import RatingRoutes from './routes/rating.route.js';
-import AuthRoutes from './routes/auth.route.js';
-import MovieRoutes from './routes/movie.router.js';
+import RatingRoutes from './routes/rating.routes.js';
+import AuthRoutes from './routes/auth.routes.js';
+import MovieRoutes from './routes/movie.routes.js';
 import cors from 'cors';
 import logger from './config/logger.js';
 import { RequestEmpty } from './types/type.js';

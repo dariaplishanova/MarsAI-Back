@@ -1,74 +1,82 @@
 import { Response } from 'express';
-import Movie from '../models/movie.model.js';
-import { MovieType, Params, RequestBody, RequestEmpty, RequestParams, RequestParamsBody } from '../types/type.js';
+import * as MovieService from '../services/movie.service.js';
 import logger from '../config/logger.js';
-import { s, sendError } from '../utils.js';
+import { MovieType, Params, RequestBody, RequestEmpty, RequestParams, RequestParamsBody } from '../types/type.js';
+import { s } from '../utils.js';
+import AppError from '../errors/AppError.js';
 
-const getAllMovies = async (_req: RequestEmpty, res: Response) => {
-  const results = await Movie.findAll();
+export const getAllMovies = async (_req: RequestEmpty, res: Response) => {
+  const results = await MovieService.getAllMovies();
 
   if (results.length === 0) {
-    logger.warn(`Aucune vidéo n'a été trouvé.`);
-    return res.status(200).json({
-      success: true,
-      data: [],
-      message: "Aucune vidéo n'a été trouvé",
-    });
+    logger.warn('No videos found.');
+  } else {
+    logger.info(`${results.length} video${s(results.length)} found.`);
   }
 
-  logger.info(`${results.length} vidéo${s(results.length)} ont été trouvées`);
-  res.status(200).json({
+  return res.json({
     success: true,
     data: results,
-    message: `${results.length} vidéo${s(results.length)} ont été trouvées`,
+    message:
+      results.length === 0
+        ? "Aucune vidéo n'a été trouvé"
+        : `${results.length} vidéo${s(results.length)} ont été trouvées`,
   });
 };
 
-const getAllMoviesForJury = async (_req: RequestEmpty, res: Response) => {
-  const results = await Movie.findAllForJury();
+export const getAllMoviesForJury = async (_req: RequestEmpty, res: Response) => {
+  const results = await MovieService.getAllMoviesForJury();
 
   if (results.length === 0) {
-    logger.warn(`Aucune vidéo n'a été trouvé.`);
-    return res.status(200).json({
-      success: true,
-      data: [],
-      message: "Aucune vidéo n'a été trouvé",
-    });
+    logger.warn('No videos found for the jury.');
+  } else {
+    logger.info(`${results.length} video${s(results.length)} found for the jury.`);
   }
 
-  logger.info(`${results.length} vidéo${s(results.length)} ont été trouvées pour le jury`);
-  res.status(200).json({
+  return res.json({
     success: true,
     data: results,
-    message: `${results.length} vidéo${s(results.length)} ont été trouvées pour le jury`,
+    message:
+      results.length === 0
+        ? "Aucune vidéo n'a été trouvé"
+        : `${results.length} vidéo${s(results.length)} ont été trouvées pour le jury`,
   });
 };
 
-const getMovieById = async (req: RequestParams<Params>, res: Response) => {
+export const getAllMoviesForAdmin = async (_req: RequestEmpty, res: Response) => {
+  const results = await MovieService.getAllMoviesForAdmin();
+
+  if (results.length === 0) {
+    logger.warn('No videos found for the admin.');
+  } else {
+    logger.info(`${results.length} video${s(results.length)} found for the admin.`);
+  }
+
+  return res.json({
+    success: true,
+    data: results,
+    message:
+      results.length === 0
+        ? "Aucune vidéo n'a été trouvé"
+        : `${results.length} vidéo${s(results.length)} ont été trouvées pour l'admin`,
+  });
+};
+
+export const getMovieById = async (req: RequestParams<Params>, res: Response) => {
   const { id } = req.params;
-  const numericId = Number(id);
+  const movie = await MovieService.getMovieById(Number(id));
 
-  const movie = await Movie.findById(numericId);
-
-  if (!movie) {
-    return sendError(`Le film d'id ${id} est introuvable`, 404);
-  }
-
-  logger.info(`Film : ${movie?.title} trouvé.`);
-  return res.status(200).json({
+  logger.info(`Movie: "${movie.title}" found successfully.`);
+  return res.json({
     success: true,
     data: [movie],
   });
 };
 
-const create = async (req: RequestBody<MovieType>, res: Response) => {
-  const results = await Movie.create(req.body);
+export const create = async (req: RequestBody<MovieType>, res: Response) => {
+  const results = await MovieService.create(req.body);
 
-  if (results.affectedRows === 0) {
-    return sendError('Erreur lors de la création du Film', 500);
-  }
-
-  logger.info(`Le film a été créé avec succès.`);
+  logger.info('Movie entry created successfully.');
   return res.status(201).json({
     success: true,
     data: results,
@@ -76,35 +84,31 @@ const create = async (req: RequestBody<MovieType>, res: Response) => {
   });
 };
 
-const update = async (req: RequestParamsBody<Params, Partial<MovieType>>, res: Response) => {
+export const update = async (req: RequestParamsBody<Params, Partial<MovieType>>, res: Response) => {
   const { id } = req.params;
-  const numericId = Number(id);
-  const results = await Movie.update(numericId, req.body);
+  const { status } = req.body;
 
-  if (results.affectedRows === 0) {
-    const exists = await Movie.findById(numericId);
+  logger.info(`[Movie Controller]: Received PUT request for Movie ID ${id}`);
 
-    if (!exists) {
-      logger.warn(`Tentative de modification d'un film inexistant (ID: ${numericId})`);
-      return sendError("Le film n'a pas été trouvé.", 404);
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: 'Aucun changement nécessaire (données identiques)',
-    });
+  if (!status) {
+    logger.warn(`[Movie Controller Warning]: Request rejected. Missing "status" in request body.`);
+    throw new AppError('Invalid or missing payload parameters.', 400);
   }
 
-  logger.info(`Le film a été modifié.`);
-  res.status(200).json({
+  const updatedMovie = await MovieService.changeMovieStatus(Number(id), status);
+
+  logger.info(`[Movie Controller]: Sending successful response back to admin dashboard.`);
+  return res.json({
     success: true,
-    message: 'Film mis à jour avec succès',
+    message: 'Movie status updated successfully.',
+    data: updatedMovie,
   });
 };
 
 export default {
   getAllMovies,
   getAllMoviesForJury,
+  getAllMoviesForAdmin,
   getMovieById,
   create,
   update,

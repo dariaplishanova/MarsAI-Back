@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
 export const userSchema = z.object({
-  firstname: z.string().trim().min(2, 'Le prénom doit contenir au moins 2 caractères'),
-  lastname: z.string().trim().min(2, 'Le nom doit contenir au moins 2 caractères'),
-  email: z.email("L'adresse email n'est pas valide"),
+  firstname: z.string().trim().min(2, 'First name must contain at least 2 characters'),
+  lastname: z.string().trim().min(2, 'Last name must contain at least 2 characters'),
+  email: z.email('Invalid email address'),
 
   password: z
     .string()
-    .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
-    .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins une majuscule')
-    .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre'),
+    .min(8, 'Password must contain at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
 });

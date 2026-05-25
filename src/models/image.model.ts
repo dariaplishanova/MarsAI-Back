@@ -1,11 +1,15 @@
 import { Pool, PoolConnection, ResultSetHeader } from 'mysql2/promise';
-import { ImageType } from '../types/type.js';
 import db from '../config/database.js';
-import { insertEntity } from '../utils.js';
+import { ImageType } from '../types/type.js';
 
-const create = async (image: ImageType, connection: Pool | PoolConnection = db): Promise<ResultSetHeader> => {
-  const columns: (keyof ImageType)[] = ['url', 'movie_id'];
-  return insertEntity('image', image, columns, connection);
+type DBContext = Pool | PoolConnection;
+
+const create = async (image: ImageType, ctx: DBContext = db): Promise<ResultSetHeader> => {
+  const query = `INSERT INTO image (url, movie_id) VALUES (?, ?)`;
+  const [result] = await ctx.execute<ResultSetHeader>(query, [image.url, image.movie_id]);
+  return result;
 };
 
-export default { create };
+export default {
+  create,
+};

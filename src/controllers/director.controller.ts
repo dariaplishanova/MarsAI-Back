@@ -1,53 +1,47 @@
 import { Response } from 'express';
-import directorModel from '../models/director.model.js';
+import * as DirectorService from '../services/director.service.js';
 import { DirectorType, Params, RequestBody, RequestEmpty, RequestParams } from '../types/type.js';
-import { s, sendError } from '../utils.js';
+import { s } from '../utils.js';
 import logger from '../config/logger.js';
 
-const getAllDirectors = async (_req: RequestEmpty, res: Response) => {
-  const result = await directorModel.findAll();
+export const getAllDirectors = async (_req: RequestEmpty, res: Response) => {
+  const results = await DirectorService.getAllDirectors();
 
-  if (result.length === 0) {
-    logger.info('Aucun réalisateur trouvé.');
-    return res.status(200).json({
-      success: true,
-      data: [],
-      message: 'Aucun réalisateur trouvé.',
-    });
+  if (results.length === 0) {
+    logger.warn('No directors found in the database.');
+  } else {
+    logger.info(`${results.length} director${s(results.length)} found.`);
   }
 
-  logger.info(`${result.length} réalisateur${s(result.length)} trouvé${s(result.length)}.`);
-  return res.status(200).json({
+  return res.json({
     success: true,
-    data: result,
+    data: results,
+    message: results.length === 0 ? 'No directors found' : 'Directors retrieved successfully',
   });
 };
 
-const getDirectorById = async (req: RequestParams<Params>, res: Response) => {
+export const getDirectorById = async (req: RequestParams<Params>, res: Response) => {
   const { id } = req.params;
+  const director = await DirectorService.getDirectorById(Number(id));
 
-  const numericId = Number(id);
-
-  const result = await directorModel.findById(numericId);
-  if (!result) {
-    return sendError('Réalisateur introuvable', 404);
-  }
-
-  return res.status(200).json({
+  logger.info(`Director: "${director.firstname} ${director.lastname}" retrieved successfully.`);
+  return res.json({
     success: true,
-    data: result,
-    message: 'Réalisateur trouvé ',
+    data: director,
+    message: 'Director found successfully',
   });
 };
 
-const createDirector = async (req: RequestBody<DirectorType>, res: Response) => {
-  const result = await directorModel.create(req.body);
+export const createDirector = async (req: RequestBody<DirectorType>, res: Response) => {
+  logger.info('[Director Controller]: Attempting to register a new director entry.');
+  const result = await DirectorService.createDirector(req.body);
 
-  if (result.affectedRows === 0) {
-    return sendError("Échec inattendu côté serveur lors de l\'insertion.", 500);
-  }
-
-  return res.status(201).json({ success: true, data: result });
+  logger.info('Director entry created successfully.');
+  return res.status(201).json({
+    success: true,
+    data: result,
+    message: 'Director created successfully',
+  });
 };
 
 export default {
