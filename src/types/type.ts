@@ -105,6 +105,9 @@ export interface MovieRow extends RowDataPacket, MovieType {}
 export interface DirectorRow extends RowDataPacket, DirectorType {}
 export interface RatingRow extends RowDataPacket, RatingType {}
 export interface CollaboratorRow extends RowDataPacket, CollaboratorType {}
+export interface ImageRow extends RowDataPacket, ImageType {}
+
+
 
 // 3. Express Request Utilities (
 export type RequestBody<T> = Request<ParamsDictionary, object, T, object>;

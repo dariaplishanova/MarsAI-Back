@@ -2,6 +2,7 @@ import { Response } from 'express';
 import logger from '../config/logger.js';
 import AppError from '../errors/AppError.js';
 import { RequestBody, LoginCredentials, UserType, AuthenticatedRequest } from '../types/type.js';
+import * as MailService from '../services/mail.servise.js';
 import * as AuthService from '../services/auth.service.js';
 
 export const login = async (req: RequestBody<LoginCredentials>, res: Response) => {
@@ -48,8 +49,56 @@ export const getProfile = async (req: AuthenticatedRequest, res: Response) => {
   });
 };
 
+export const inviteJury = async (req: RequestBody<{ email: string }>, res: Response) => {
+  logger.info('[Auth Controller]: Invite jury request received');
+
+  await MailService.inviteJury(req.body.email);
+
+  logger.info(`[Auth Controller]: Invitation sent to ${req.body.email}`);
+
+  return res.status(200).json({
+    success: true,
+    message: 'Invitation sent successfully',
+  });
+};
+
+export const verifyInvite = async (req: RequestBody<{ token: string }>, res: Response) => {
+  const { token } = req.params;
+
+  const result = await AuthService.verifyInvite(token);
+
+  return res.status(200).json(result);
+};
+
+export const forgotPassword = async (req: RequestBody<{ email: string }>, res: Response) => {
+  logger.info(`[Auth Controller]: Forgot password request received for email: ${req.body.email}`);
+
+  const result = await AuthService.forgotPassword(req.body.email);
+
+  logger.info(`[Auth Controller]: Password reset email sent to ${req.body.email}`);
+
+  return res.status(200).json(result);
+};
+
+export const resetPassword = async (req: RequestBody<{ password: string }>, res: Response) => {
+  const { password } = req.body;
+  const { token } = req.params;
+
+  logger.info(`[Auth Controller]: Reset password request received for token: ${token}`);
+
+  const result = await AuthService.resetPassword(password, token);
+
+  logger.info(`[Auth Controller]: Password reset successfully`);
+
+  return res.status(200).json(result);
+}
+
 export default {
   login,
   register,
   getProfile,
+  inviteJury,
+  verifyInvite,
+  forgotPassword,
+  resetPassword,
 };

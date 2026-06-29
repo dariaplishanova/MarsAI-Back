@@ -57,6 +57,13 @@ const deleted = async (id: number): Promise<ResultSetHeader> => {
   return result;
 };
 
+const updatePassword = async (id: number, password: string): Promise<ResultSetHeader> => {
+  const query = 'UPDATE user SET password = ? WHERE id = ?';
+  const [result] = await db.execute<ResultSetHeader>(query, [password, id]);
+  return result;
+}
+
+
 export default {
   findAll,
   findById,
@@ -64,4 +71,5 @@ export default {
   create,
   update,
   deleted,
+  updatePassword,
 };

@@ -6,6 +6,6 @@ export const ratingSchema = z.object({
   score_creativity: z.coerce.number().min(0).max(10),
   score_technical: z.coerce.number().min(0).max(10),
   score_message: z.coerce.number().min(0).max(10),
-  comment: z.string().trim().min(1, 'Comment field is required'),
+  comment: z.string().trim().default(''),
   score_total: z.coerce.number().min(0).max(10),
 });

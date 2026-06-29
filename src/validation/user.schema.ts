@@ -9,5 +9,6 @@ export const userSchema = z.object({
     .string()
     .min(8, 'Password must contain at least 8 characters')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number'),
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[!@#$%^&*]/, 'Password must contain at least one special character'),
 });

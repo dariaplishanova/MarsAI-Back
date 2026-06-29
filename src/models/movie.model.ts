@@ -17,15 +17,35 @@ const findAll = async (): Promise<MovieRow[]> => {
 
 const findAllForAdmin = async (): Promise<MovieRow[]> => {
   const query = `
-    SELECT m.*, d.firstname AS director_firstname, d.lastname AS director_lastname,
+    SELECT m.*, d.firstname AS director_firstname, d.lastname AS director_lastname, d.country AS country, d.created_at AS created_at,
+
       (SELECT GROUP_CONCAT(i.url) FROM image i WHERE i.movie_id = m.id) AS gallery_urls,
-      (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'firstname', c.firstname, 'lastname', c.lastname, 'job', c.job, 'email', c.email)) FROM collaborator c WHERE c.movie_id = m.id) AS collaborators,
-      (SELECT JSON_ARRAYAGG(JSON_OBJECT('score_creativity', r.score_creativity, 'score_technical', r.score_technical, 'score_message', r.score_message, 'comment', r.comment, 'jury_firstname', u.firstname, 'jury_lastname', u.lastname)) FROM rating r JOIN user u ON r.user_id = u.id WHERE r.movie_id = m.id) AS ratings
+      (SELECT JSON_ARRAYAGG(JSON_OBJECT(
+        'id', c.id,
+        'firstname', c.firstname,
+        'lastname', c.lastname,
+        'job', c.job,
+        'email', c.email
+      ))
+      FROM collaborator c WHERE c.movie_id = m.id) AS collaborators,
+      (SELECT JSON_ARRAYAGG(JSON_OBJECT(
+        'score_creativity', r.score_creativity,
+        'score_technical', r.score_technical,
+        'score_message', r.score_message,
+        'score_total', r.score_total,
+        'comment', r.comment,
+        'jury_firstname', u.firstname,
+        'jury_lastname', u.lastname
+      ))
+      FROM rating r
+      JOIN user u ON r.user_id = u.id
+      WHERE r.movie_id = m.id) AS ratings
     FROM movie m
     LEFT JOIN director d ON m.director_id = d.id
     ORDER BY m.created_at DESC
   `;
-  const [rows] = await db.execute<MovieRow[]>(query);
+
+  const [rows] = await db.execute<MovieRow[]>(query); 
   return rows;
 };
 

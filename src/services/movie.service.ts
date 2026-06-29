@@ -12,7 +12,14 @@ export const getAllMoviesForJury = async (): Promise<MovieType[]> => {
 };
 
 export const getAllMoviesForAdmin = async (): Promise<MovieType[]> => {
-  return await Movie.findAllForAdmin();
+  const rawMovies = await Movie.findAllForAdmin();
+
+  return rawMovies.map((row: any) => ({
+    ...row,
+    collaborators: typeof row.collaborators === 'string' ? JSON.parse(row.collaborators) : (row.collaborators || []),
+    ratings: typeof row.ratings === 'string' ? JSON.parse(row.ratings) : (row.ratings || []),
+    gallery_urls: typeof row.gallery_urls === 'string' ? row.gallery_urls.split(',') : (row.gallery_urls || []),
+  }));
 };
 
 export const getMovieById = async (id: number): Promise<MovieType> => {

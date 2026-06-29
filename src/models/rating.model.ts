@@ -1,6 +1,12 @@
 import { ResultSetHeader } from 'mysql2/promise';
 import db from '../config/database.js';
-import { RatingType } from '../types/type.js';
+import { RatingRow, RatingType } from '../types/type.js';
+
+const findAll = async (): Promise<RatingRow[]> => {
+  const query = 'SELECT score_creativity, score_technical, score_message, comment, score_total, created_at FROM rating';
+  const [rows] = await db.execute<RatingRow[]>(query);
+  return rows;
+};
 
 const createRating = async (rating: RatingType): Promise<ResultSetHeader> => {
   const query = `
@@ -24,5 +30,6 @@ const createRating = async (rating: RatingType): Promise<ResultSetHeader> => {
 };
 
 export default {
+  findAll,
   createRating,
 };
