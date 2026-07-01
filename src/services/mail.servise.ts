@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { transporter } from '../config/email.js';
 import AppError from '../errors/AppError.js';
+import { resend } from '../config/email.js';
 
 export const inviteJury = async (email: string) => {
   const secret = process.env.JWT_SECRET;
@@ -14,8 +14,8 @@ export const inviteJury = async (email: string) => {
   const link = `${process.env.FRONTEND_URL}/register/${token}`;
   const loginLink = `${process.env.FRONTEND_URL}/login`;
 
-  await transporter.sendMail({
-    from: 'MarsAI',
+  await resend.emails.send({
+    from: 'onboarding@resend.dev',
     to: email,
     subject: 'You are invited as Jury',
     html: `
