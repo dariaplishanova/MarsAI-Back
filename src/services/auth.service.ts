@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import AppError from '../errors/AppError.js';
 import { LoginCredentials, UserType } from '../types/type.js';
 import UserModel from '../models/user.model.js';
-import { transporter } from '../config/email.js';
+import { resend } from '../config/email.js';
 
 function getJwtSecret() {
   const secret = process.env.JWT_SECRET;
@@ -124,8 +124,8 @@ export const forgotPassword = async (email: string) => {
 
   const link = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
-  await transporter.sendMail({
-    from: 'MarsAI',
+  await resend.emails.send({
+    from: 'onboarding@resend.dev',
     to: email,
     subject: 'Reset your password',
     html: ` <a href="${link}">Reset your password</a>`,

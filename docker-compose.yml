@@ -31,10 +31,9 @@ services:
       DB_NAME: ${DB_NAME}
       JWT_SECRET: ${JWT_SECRET}
       CLOUDINARY_URL: ${CLOUDINARY_URL}
-      MAIL_USER: ${MAIL_USER}
-      MAIL_PASS: ${MAIL_PASS}
       FRONTEND_URL: ${FRONTEND_URL}
       CORS_ORIGIN: ${CORS_ORIGIN}
+      RESEND_API_KEY: ${RESEND_API_KEY}
     depends_on:
       db:
         condition: service_healthy
