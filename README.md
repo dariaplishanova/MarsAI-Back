@@ -68,15 +68,15 @@ Create a `.env` file in the project root.
 Example:
 
 ```env
-PORT=le_port_choisi
-DB_HOST=le_host
-DB_USER=identifiant
-DB_PASSWORD=mot_de_passe
-DB_NAME=nom_de_la_base_de_données%
-DB_PORT=le_numero_de_port
+PORT=chosen_port
+DB_HOST=database_host
+DB_USER=database_username
+DB_PASSWORD=database_password
+DB_NAME=database_name
+DB_PORT=database_port
 CORS_ORIGIN=http://...
 FRONTEND_URL=http://...
-JWT_SECRET=une_cle_secrete_a_definir
+JWT_SECRET=secret_key_to_define
 CLOUDINARY_URL=cloudinary://<your_api_key>:<your_api_secret><your_cloud_name>
 RESEND_API_KEY=your_key_here
 ```
